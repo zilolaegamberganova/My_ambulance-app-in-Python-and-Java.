@@ -1,29 +1,137 @@
-<style>
-    /* Rasmga o'xshash zamonaviy dashboard uslubi */
-    body { background-color: #f0f4f8; font-family: 'Inter', sans-serif; }
-    .main-grid { display: grid; grid-template-columns: 250px 1fr; gap: 20px; padding: 20px; }
-    
-    .sidebar { background: white; border-radius: 20px; padding: 20px; height: 90vh; }
-    .course-card { 
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white; border-radius: 20px; padding: 20px; margin-bottom: 20px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    .stats-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-</style>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Ambulance Pro Dashboard</title>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f8fafc; display: flex; height: 100vh; overflow: hidden; }
 
-<div class="main-grid">
+        /* 1. Chap tomondagi Menu (Sidebar) */
+        .sidebar { width: 260px; background: white; padding: 30px; display: flex; flex-direction: column; gap: 20px; border-right: 1px solid #e2e8f0; }
+        .logo { font-size: 24px; font-weight: 600; color: #007bff; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        .menu-item { padding: 12px 15px; border-radius: 12px; color: #64748b; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; }
+        .menu-item:hover, .active { background: #eff6ff; color: #007bff; font-weight: 600; }
+
+        /* 2. Asosiy Content qismi */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .welcome-text h1 { font-size: 28px; color: #1e293b; }
+        .welcome-text p { color: #64748b; }
+
+        /* 3. Kartochkalar (Cards) dizayni */
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        
+        .card { background: white; border-radius: 24px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
+        
+        .blue-card { 
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
+            color: white; padding: 30px; position: relative; overflow: hidden;
+        }
+        .blue-card h2 { font-size: 22px; margin-bottom: 10px; }
+        .progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.3); border-radius: 10px; margin-top: 20px; }
+        .progress-fill { width: 65%; height: 100%; background: white; border-radius: 10px; }
+
+        /* 4. Chat qismi (AI Assistant) */
+        .chat-section { background: white; border-radius: 24px; display: flex; flex-direction: column; height: 500px; border: 1px solid #f1f5f9; }
+        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 12px 18px; border-radius: 15px; max-width: 85%; font-size: 14px; }
+        .bot { background: #f1f5f9; color: #334155; align-self: flex-start; }
+        .user { background: #007bff; color: white; align-self: flex-end; }
+
+        .input-area { padding: 20px; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; }
+        input { flex: 1; border: none; background: #f8fafc; padding: 12px 20px; border-radius: 15px; outline: none; }
+        .send-btn { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; }
+
+        .sos-btn { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Menu -->
     <div class="sidebar">
-        <h3>🚑 E-Ambulance</h3>
-        <p>📊 Dashboard</p>
-        <p>👨‍⚕️ Doctors</p>
-        <p>🤖 AI Assistant</p>
+        <div class="logo">🚑 E-Tutor App</div>
+        <div class="menu-item active">🏠 Dashboard</div>
+        <div class="menu-item">👨‍⚕️ Shifokorlar</div>
+        <div class="menu-item">📅 Jadval</div>
+        <div class="menu-item">⚙️ Sozlamalar</div>
+        <button class="sos-btn" style="margin-top: auto;" onclick="alert('SOS SIGNAL YUBORILDI!')">SOS EMERGENCY</button>
     </div>
-    <div class="content">
-        <div class="course-card">
-            <h2>Welcome back, User!</h2>
-            <p>Hozirgi holatingiz: Barqaror</p>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header-top">
+            <div class="welcome-text">
+                <h1>Xush kelibsiz, Ahsanul!</h1>
+                <p>Sizning salomatlik holatingiz nazoratda.</p>
+            </div>
+            <div style="font-weight: 600;">Mart, 2026</div>
         </div>
-        <!-- AI Chat oynasi shu yerda bo'ladi -->
+
+        <div class="dashboard-grid">
+            <!-- Chap tomondagi katta kartochkalar -->
+            <div class="left-col">
+                <div class="card blue-card">
+                    <h2>AI Diagnostika: O'pka salomatligi</h2>
+                    <p>Oxirgi tekshiruv natijasi: 85% yaxshi</p>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
+                </div>
+
+                <div class="card chat-section">
+                    <h3 style="margin-bottom: 15px;">🤖 AI Assistant bilan suhbat</h3>
+                    <div id="chat-box">
+                        <div class="msg bot">Salom! Men sun'iy intellektman. Qanday yordam bera olaman?</div>
+                    </div>
+                    <div class="input-area">
+                        <input type="text" id="user-input" placeholder="Savolingizni yozing..." onkeypress="if(event.keyCode==13) sendMessage()">
+                        <button class="send-btn" onclick="sendMessage()">Yuborish</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- O'ng tomondagi kichik kartochkalar -->
+            <div class="right-col">
+                <div class="card" style="margin-bottom: 30px;">
+                    <h3>📊 Progress</h3>
+                    <p style="color:#64748b; font-size: 13px;">Haftalik faollik</p>
+                    <div style="font-size: 32px; font-weight: 600; color: #007bff; margin-top: 15px;">76%</div>
+                    <p style="color:#10b981; font-size: 12px;">+12% o'tgan haftadan</p>
+                </div>
+
+                <div class="card">
+                    <h3>🔔 Eslatmalar</h3>
+                    <div style="margin-top: 15px; font-size: 14px; color: #64748b;">
+                        <p>✅ Vitamin ichish - 12:00</p><br>
+                        <p>✅ Doktor qabuli - 16:00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+
+    <script>
+        async function sendMessage() {
+            let input = document.getElementById("user-input");
+            let chatBox = document.getElementById("chat-box");
+            if(!input.value.trim()) return;
+
+            chatBox.innerHTML += `<div class="msg user">${input.value}</div>`;
+            let text = input.value;
+            input.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            let response = await fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: text})
+            });
+            let data = await response.json();
+            chatBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
