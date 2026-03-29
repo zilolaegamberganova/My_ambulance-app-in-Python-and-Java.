@@ -3,132 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Ambulance Pro Dashboard</title>
+    <title>E-Ambulance Professional Dashboard</title>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: #f8fafc; display: flex; height: 100vh; overflow: hidden; }
+        :root { --primary: #4F46E5; --bg: #F8FAFC; --sidebar: #FFFFFF; --text-main: #1E293B; --text-sub: #64748B; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg); display: flex; height: 100vh; color: var(--text-main); }
 
-        /* 1. Chap tomondagi Menu (Sidebar) */
-        .sidebar { width: 260px; background: white; padding: 30px; display: flex; flex-direction: column; gap: 20px; border-right: 1px solid #e2e8f0; }
-        .logo { font-size: 24px; font-weight: 600; color: #007bff; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
-        .menu-item { padding: 12px 15px; border-radius: 12px; color: #64748b; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; }
-        .menu-item:hover, .active { background: #eff6ff; color: #007bff; font-weight: 600; }
+        /* Sidebar - Chap Menyu */
+        .sidebar { width: 280px; background: var(--sidebar); border-right: 1px solid #E2E8F0; padding: 40px 30px; display: flex; flex-direction: column; gap: 10px; }
+        .logo { font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 40px; display: flex; align-items: center; gap: 12px; }
+        .nav-item { padding: 14px 20px; border-radius: 12px; color: var(--text-sub); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px; font-weight: 500; }
+        .nav-item:hover, .nav-item.active { background: #EEF2FF; color: var(--primary); }
+        .sos-btn { margin-top: auto; background: #EF4444; color: white; border: none; padding: 16px; border-radius: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2); animation: pulse 2s infinite; }
 
-        /* 2. Asosiy Content qismi */
-        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .welcome-text h1 { font-size: 28px; color: #1e293b; }
-        .welcome-text p { color: #64748b; }
+        /* Main Content - Asosiy Qism */
+        .main { flex: 1; padding: 40px 60px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .header h1 { font-size: 32px; font-weight: 700; }
 
-        /* 3. Kartochkalar (Cards) dizayni */
-        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        /* Dashboard Grid */
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        .card { background: white; border-radius: 24px; padding: 30px; border: 1px solid #F1F5F9; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         
-        .card { background: white; border-radius: 24px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
-        
-        .blue-card { 
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
-            color: white; padding: 30px; position: relative; overflow: hidden;
-        }
-        .blue-card h2 { font-size: 22px; margin-bottom: 10px; }
-        .progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.3); border-radius: 10px; margin-top: 20px; }
-        .progress-fill { width: 65%; height: 100%; background: white; border-radius: 10px; }
+        .welcome-card { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white; border: none; margin-bottom: 30px; }
+        .welcome-card h2 { font-size: 26px; margin-bottom: 10px; }
+        .progress-container { margin-top: 25px; background: rgba(255,255,255,0.2); height: 10px; border-radius: 10px; overflow: hidden; }
+        .progress-bar { width: 75%; height: 100%; background: white; border-radius: 10px; }
 
-        /* 4. Chat qismi (AI Assistant) */
-        .chat-section { background: white; border-radius: 24px; display: flex; flex-direction: column; height: 500px; border: 1px solid #f1f5f9; }
-        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 12px 18px; border-radius: 15px; max-width: 85%; font-size: 14px; }
-        .bot { background: #f1f5f9; color: #334155; align-self: flex-start; }
-        .user { background: #007bff; color: white; align-self: flex-end; }
+        /* AI Chat Box - Professional */
+        .chat-container { display: flex; flex-direction: column; height: 450px; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 10px 5px; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 12px 20px; border-radius: 18px; font-size: 14px; line-height: 1.6; max-width: 85%; }
+        .bot { background: #F1F5F9; color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2); }
 
-        .input-area { padding: 20px; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; }
-        input { flex: 1; border: none; background: #f8fafc; padding: 12px 20px; border-radius: 15px; outline: none; }
-        .send-btn { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; }
+        .input-group { margin-top: 20px; display: flex; gap: 12px; background: #F8FAFC; padding: 8px; border-radius: 16px; border: 1px solid #E2E8F0; }
+        input { flex: 1; border: none; background: transparent; padding: 12px; outline: none; font-size: 14px; }
+        .send-btn { background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .send-btn:hover { transform: scale(1.05); }
 
-        .sos-btn { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar Menu -->
-    <div class="sidebar">
-        <div class="logo">🚑 E-Tutor App</div>
-        <div class="menu-item active">🏠 Dashboard</div>
-        <div class="menu-item">👨‍⚕️ Shifokorlar</div>
-        <div class="menu-item">📅 Jadval</div>
-        <div class="menu-item">⚙️ Sozlamalar</div>
-        <button class="sos-btn" style="margin-top: auto;" onclick="alert('SOS SIGNAL YUBORILDI!')">SOS EMERGENCY</button>
-    </div>
+    <aside class="sidebar">
+        <div class="logo">🏥 E-Ambulance</div>
+        <div class="nav-item active">🏠 Asosiy Panel</div>
+        <div class="nav-item">👨‍⚕️ Shifokorlar</div>
+        <div class="nav-item">📊 Analitika</div>
+        <div class="nav-item">⚙️ Sozlamalar</div>
+        <button class="sos-btn" onclick="alert('SOS YUBORILDI!')">SOS EMERGENCY</button>
+    </aside>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="header-top">
-            <div class="welcome-text">
-                <h1>Xush kelibsiz, Ahsanul!</h1>
-                <p>Sizning salomatlik holatingiz nazoratda.</p>
+    <main class="main">
+        <header class="header">
+            <div>
+                <h1>Xush kelibsiz!</h1>
+                <p style="color: var(--text-sub);">Bugun: 29 Mart, 2026</p>
             </div>
-            <div style="font-weight: 600;">Mart, 2026</div>
-        </div>
+            <div style="background: white; padding: 10px 20px; border-radius: 12px; border: 1px solid #E2E8F0; font-weight: 600;">Status: Online</div>
+        </header>
 
-        <div class="dashboard-grid">
-            <!-- Chap tomondagi katta kartochkalar -->
-            <div class="left-col">
-                <div class="card blue-card">
-                    <h2>AI Diagnostika: O'pka salomatligi</h2>
-                    <p>Oxirgi tekshiruv natijasi: 85% yaxshi</p>
-                    <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="grid">
+            <div class="left">
+                <div class="card welcome-card">
+                    <h2>Salomatlik Monitoringi</h2>
+                    <p>Hozirgi holatingiz barqaror. AI tahlili yakunlandi.</p>
+                    <div class="progress-container"><div class="progress-bar"></div></div>
+                    <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">Haftalik ko'rsatkich: 75% ijobiy</p>
                 </div>
 
-                <div class="card chat-section">
-                    <h3 style="margin-bottom: 15px;">🤖 AI Assistant bilan suhbat</h3>
+                <div class="card chat-container">
+                    <h3 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">🤖 AI Assistant</h3>
                     <div id="chat-box">
-                        <div class="msg bot">Salom! Men sun'iy intellektman. Qanday yordam bera olaman?</div>
+                        <div class="msg bot">Assalomu alaykum! Men sizning shaxsiy AI yordamchingizman. Sog'lig'ingiz haqida savollaringiz bormi?</div>
                     </div>
-                    <div class="input-area">
-                        <input type="text" id="user-input" placeholder="Savolingizni yozing..." onkeypress="if(event.keyCode==13) sendMessage()">
-                        <button class="send-btn" onclick="sendMessage()">Yuborish</button>
+                    <div class="input-group">
+                        <input type="text" id="user-input" placeholder="Xabaringizni yozing..." onkeypress="if(event.keyCode==13) sendMessage()">
+                        <button class="send-btn" onclick="sendMessage()">➤</button>
                     </div>
                 </div>
             </div>
 
-            <!-- O'ng tomondagi kichik kartochkalar -->
-            <div class="right-col">
-                <div class="card" style="margin-bottom: 30px;">
-                    <h3>📊 Progress</h3>
-                    <p style="color:#64748b; font-size: 13px;">Haftalik faollik</p>
-                    <div style="font-size: 32px; font-weight: 600; color: #007bff; margin-top: 15px;">76%</div>
-                    <p style="color:#10b981; font-size: 12px;">+12% o'tgan haftadan</p>
+            <div class="right">
+                <div class="card" style="margin-bottom: 30px; text-align: center;">
+                    <p style="color: var(--text-sub); margin-bottom: 10px;">Yurak urishi (Pulse)</p>
+                    <h1 style="color: #EF4444; font-size: 48px;">72</h1>
+                    <p style="font-size: 14px; color: #10B981; font-weight: 600;">Normal holat</p>
                 </div>
-
                 <div class="card">
-                    <h3>🔔 Eslatmalar</h3>
-                    <div style="margin-top: 15px; font-size: 14px; color: #64748b;">
-                        <p>✅ Vitamin ichish - 12:00</p><br>
-                        <p>✅ Doktor qabuli - 16:00</p>
+                    <h3 style="margin-bottom: 15px;">Tezkor Bog'lanish</h3>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="padding: 15px; background: #F8FAFC; border-radius: 12px; font-size: 14px;">📞 Dr. Jamshid (Kardiolog)</div>
+                        <div style="padding: 15px; background: #F8FAFC; border-radius: 12px; font-size: 14px;">📞 Tez Yordam (103)</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         async function sendMessage() {
-            let input = document.getElementById("user-input");
-            let chatBox = document.getElementById("chat-box");
+            const input = document.getElementById("user-input");
+            const chatBox = document.getElementById("chat-box");
             if(!input.value.trim()) return;
 
-            chatBox.innerHTML += `<div class="msg user">${input.value}</div>`;
-            let text = input.value;
+            const userMsg = input.value;
+            chatBox.innerHTML += `<div class="msg user">${userMsg}</div>`;
             input.value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            let response = await fetch('/chat', {
+            const response = await fetch('/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: text})
+                body: JSON.stringify({message: userMsg})
             });
-            let data = await response.json();
+            const data = await response.json();
             chatBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
         }
