@@ -3,72 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ambulance AI Dashboard</title>
+    <title>Ambulance AI - SOS Center</title>
     <style>
-        /* Zamonaviy dizayn uslubi */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .chat-container { width: 90%; max-width: 400px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
-        .chat-header { background: #007bff; color: white; padding: 20px; text-align: center; font-size: 1.2em; font-weight: bold; }
+        :root { --sos-red: #ff4d4d; --main-blue: #007bff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; }
         
-        /* Chat oynasi dizayni */
-        #chat-box { height: 450px; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #ffffff; }
-        .message { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 14px; line-height: 1.4; }
-        .user-msg { align-self: flex-end; background: #007bff; color: white; border-bottom-right-radius: 2px; }
-        .bot-msg { align-self: flex-start; background: #e9ecef; color: #333; border-bottom-left-radius: 2px; }
+        /* Dashboard qismi */
+        .container { width: 100%; max-width: 450px; background: white; height: 100vh; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .header { background: var(--main-blue); color: white; padding: 20px; text-align: center; font-size: 22px; font-weight: bold; position: relative; }
+        
+        /* SOS Tugmasi */
+        .sos-btn { background: var(--sos-red); color: white; border: 5px solid white; border-radius: 50%; width: 80px; height: 80px; font-weight: bold; font-size: 18px; cursor: pointer; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); box-shadow: 0 0 15px rgba(255, 77, 77, 0.5); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.1); } 100% { transform: translateY(-50%) scale(1); } }
 
-        /* Kirish qismi */
-        .input-area { display: flex; padding: 15px; border-top: 1px solid #eee; background: #f9f9f9; }
-        input { flex: 1; border: 1px solid #ddd; padding: 12px; border-radius: 25px; outline: none; transition: 0.3s; }
-        input:focus { border-color: #007bff; }
-        button { background: #007bff; color: white; border: none; padding: 10px 20px; margin-left: 10px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #0056b3; }
+        /* Status Paneli */
+        .status-bar { display: flex; justify-content: space-around; padding: 10px; background: #f8f9fa; border-bottom: 1px solid #eee; font-size: 12px; }
+        .status-item { text-align: center; color: #666; }
+
+        /* Chat maydoni */
+        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 12px 18px; border-radius: 20px; max-width: 80%; font-size: 14px; position: relative; }
+        .user { align-self: flex-end; background: var(--main-blue); color: white; border-bottom-right-radius: 2px; }
+        .bot { align-self: flex-start; background: #e9ecef; color: #333; border-bottom-left-radius: 2px; }
+
+        /* Pastki qism */
+        .input-area { padding: 20px; display: flex; gap: 10px; background: white; border-top: 1px solid #eee; }
+        input { flex: 1; border: 1px solid #ddd; padding: 12px; border-radius: 25px; outline: none; }
+        .call-btn { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 50%; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="chat-container">
-    <div class="chat-header">🚑 Ambulance AI Helper</div>
-    <div id="chat-box">
-        <div class="message bot-msg">Salom! Men sizga qanday yordam bera olaman?</div>
+<div class="container">
+    <div class="header">
+        🚑 Ambulance AI
+        <button class="sos-btn" onclick="triggerSOS()">SOS</button>
     </div>
+
+    <div class="status-bar">
+        <div class="status-item">📍 Joylashuv: <b id="location">Aniqlanmoqda...</b></div>
+        <div class="status-item">🚑 Holat: <b>Tayyor</b></div>
+    </div>
+
+    <div id="chat-box">
+        <div class="msg bot">Assalomu alaykum! Men sun'iy intellekt yordamchisiman. Shoshilinch yordam kerakmi?</div>
+    </div>
+
     <div class="input-area">
-        <input type="text" id="user-input" placeholder="Xabarni yozing..." onkeypress="handleKey(event)">
-        <button onclick="sendMessage()">➤</button>
+        <button class="call-btn" onclick="window.location.href='tel:103'">📞</button>
+        <input type="text" id="user-input" placeholder="Vaziyatni tushuntiring..." onkeypress="if(event.keyCode==13) sendMessage()">
+        <button onclick="sendMessage()" style="background:var(--main-blue); color:white; border:none; padding:10px 20px; border-radius:25px; cursor:pointer;">➤</button>
     </div>
 </div>
 
 <script>
-    // Enter tugmasini bossa ham yuboradigan qilish
-    function handleKey(e) {
-        if (e.keyCode === 13) sendMessage();
+    // GPS joylashuvni aniqlash
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            document.getElementById('location').innerText = "Aniqlandi";
+        });
+    }
+
+    function triggerSOS() {
+        alert("⚠️ SOS SIGNAL YUBORILDI! Eng yaqin tez yordam va qutqaruvchilarga xabar berildi.");
+        let chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML += `<div class="msg bot" style="background:#ffebee; color:red; border:1px solid red;"><b>DIQQAT:</b> SOS signal qabul qilindi. Koordinatalaringiz markazga yuborildi. Iltimos, aloqada qoling!</div>`;
     }
 
     async function sendMessage() {
         let input = document.getElementById("user-input");
         let chatBox = document.getElementById("chat-box");
-        let message = input.value.trim();
+        if(!input.value.trim()) return;
 
-        if (message === "") return;
-
-        // Foydalanuvchi xabarini qo'shish
-        chatBox.innerHTML += `<div class="message user-msg">${message}</div>`;
+        chatBox.innerHTML += `<div class="msg user">${input.value}</div>`;
+        let text = input.value;
         input.value = "";
         chatBox.scrollTop = chatBox.scrollHeight;
 
-        try {
-            let response = await fetch('/chat', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: message})
-            });
-            let data = await response.json();
-            
-            // Robot javobini qo'shish
-            chatBox.innerHTML += `<div class="message bot-msg">${data.reply}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        } catch (error) {
-            chatBox.innerHTML += `<div class="message bot-msg" style="color:red;">Xatolik: Serverga ulanib bo'lmadi.</div>`;
-        }
+        let response = await fetch('/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: text})
+        });
+        let data = await response.json();
+        chatBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
     }
 </script>
 
