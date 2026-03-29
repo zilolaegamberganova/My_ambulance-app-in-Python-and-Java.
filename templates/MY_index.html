@@ -1,95 +1,29 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ambulance AI - SOS Center</title>
-    <style>
-        :root { --sos-red: #ff4d4d; --main-blue: #007bff; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; }
-        
-        /* Dashboard qismi */
-        .container { width: 100%; max-width: 450px; background: white; height: 100vh; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        .header { background: var(--main-blue); color: white; padding: 20px; text-align: center; font-size: 22px; font-weight: bold; position: relative; }
-        
-        /* SOS Tugmasi */
-        .sos-btn { background: var(--sos-red); color: white; border: 5px solid white; border-radius: 50%; width: 80px; height: 80px; font-weight: bold; font-size: 18px; cursor: pointer; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); box-shadow: 0 0 15px rgba(255, 77, 77, 0.5); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.1); } 100% { transform: translateY(-50%) scale(1); } }
+<style>
+    /* Rasmga o'xshash zamonaviy dashboard uslubi */
+    body { background-color: #f0f4f8; font-family: 'Inter', sans-serif; }
+    .main-grid { display: grid; grid-template-columns: 250px 1fr; gap: 20px; padding: 20px; }
+    
+    .sidebar { background: white; border-radius: 20px; padding: 20px; height: 90vh; }
+    .course-card { 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white; border-radius: 20px; padding: 20px; margin-bottom: 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .stats-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+</style>
 
-        /* Status Paneli */
-        .status-bar { display: flex; justify-content: space-around; padding: 10px; background: #f8f9fa; border-bottom: 1px solid #eee; font-size: 12px; }
-        .status-item { text-align: center; color: #666; }
-
-        /* Chat maydoni */
-        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 12px 18px; border-radius: 20px; max-width: 80%; font-size: 14px; position: relative; }
-        .user { align-self: flex-end; background: var(--main-blue); color: white; border-bottom-right-radius: 2px; }
-        .bot { align-self: flex-start; background: #e9ecef; color: #333; border-bottom-left-radius: 2px; }
-
-        /* Pastki qism */
-        .input-area { padding: 20px; display: flex; gap: 10px; background: white; border-top: 1px solid #eee; }
-        input { flex: 1; border: 1px solid #ddd; padding: 12px; border-radius: 25px; outline: none; }
-        .call-btn { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 50%; cursor: pointer; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="header">
-        🚑 Ambulance AI
-        <button class="sos-btn" onclick="triggerSOS()">SOS</button>
+<div class="main-grid">
+    <div class="sidebar">
+        <h3>🚑 E-Ambulance</h3>
+        <p>📊 Dashboard</p>
+        <p>👨‍⚕️ Doctors</p>
+        <p>🤖 AI Assistant</p>
     </div>
-
-    <div class="status-bar">
-        <div class="status-item">📍 Joylashuv: <b id="location">Aniqlanmoqda...</b></div>
-        <div class="status-item">🚑 Holat: <b>Tayyor</b></div>
-    </div>
-
-    <div id="chat-box">
-        <div class="msg bot">Assalomu alaykum! Men sun'iy intellekt yordamchisiman. Shoshilinch yordam kerakmi?</div>
-    </div>
-
-    <div class="input-area">
-        <button class="call-btn" onclick="window.location.href='tel:103'">📞</button>
-        <input type="text" id="user-input" placeholder="Vaziyatni tushuntiring..." onkeypress="if(event.keyCode==13) sendMessage()">
-        <button onclick="sendMessage()" style="background:var(--main-blue); color:white; border:none; padding:10px 20px; border-radius:25px; cursor:pointer;">➤</button>
+    <div class="content">
+        <div class="course-card">
+            <h2>Welcome back, User!</h2>
+            <p>Hozirgi holatingiz: Barqaror</p>
+        </div>
+        <!-- AI Chat oynasi shu yerda bo'ladi -->
     </div>
 </div>
-
-<script>
-    // GPS joylashuvni aniqlash
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            document.getElementById('location').innerText = "Aniqlandi";
-        });
-    }
-
-    function triggerSOS() {
-        alert("⚠️ SOS SIGNAL YUBORILDI! Eng yaqin tez yordam va qutqaruvchilarga xabar berildi.");
-        let chatBox = document.getElementById("chat-box");
-        chatBox.innerHTML += `<div class="msg bot" style="background:#ffebee; color:red; border:1px solid red;"><b>DIQQAT:</b> SOS signal qabul qilindi. Koordinatalaringiz markazga yuborildi. Iltimos, aloqada qoling!</div>`;
-    }
-
-    async function sendMessage() {
-        let input = document.getElementById("user-input");
-        let chatBox = document.getElementById("chat-box");
-        if(!input.value.trim()) return;
-
-        chatBox.innerHTML += `<div class="msg user">${input.value}</div>`;
-        let text = input.value;
-        input.value = "";
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        let response = await fetch('/chat', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({message: text})
-        });
-        let data = await response.json();
-        chatBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-</script>
-
-</body>
-</html>
