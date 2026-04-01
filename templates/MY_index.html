@@ -2,77 +2,49 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <title>AI Ko'p Tilli Yordamchi</title>
+    <title>Ambulance AI Helper</title>
     <style>
-        body { font-family: 'Arial', sans-serif; text-align: center; margin-top: 50px; background: #f4f4f9; }
-        .container { background: white; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        button { padding: 10px 20px; cursor: pointer; border-radius: 5px; border: 1px solid #ccc; background: #eee; }
-        button:hover { background: #ddd; }
-        input { padding: 10px; width: 250px; border-radius: 5px; border: 1px solid #ccc; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .chat-card { width: 400px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        h2 { color: #4F46E5; margin-bottom: 20px; }
+        input { width: 85%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 15px; outline: none; }
+        button { background: #4F46E5; color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 93%; }
+        #javob { margin-top: 20px; color: #1e293b; font-size: 14px; line-height: 1.5; background: #f8fafc; padding: 10px; border-radius: 10px; min-height: 50px; }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h1 id="title">Xush kelibsiz!</h1>
-    
-    <div style="margin-bottom: 20px;">
-        <button onclick="changeLang('uz')">O'zbek</button>
-        <button onclick="changeLang('en')">English</button>
-        <button onclick="changeLang('ru')">Русский</button>
+    <div class="chat-card">
+        <h2>🚑 AI Assistant</h2>
+        <input type="text" id="savol" placeholder="Savolingizni yozing...">
+        <button onclick="yubor()">➤ So'rash</button>
+        <div id="javob">Javob kutilyapti...</div>
     </div>
 
-    <input type="text" id="userInput" placeholder="Savol yozing...">
-    <button onclick="sendToAI()" id="sendBtn">Yuborish</button>
+    <script>
+    async function yubor() {
+        let msg = document.getElementById("savol").value;
+        let javobBox = document.getElementById("javob");
+        if(!msg) return;
 
-    <div style="margin-top: 20px;">
-        <strong>AI:</strong> <span id="aiStatus">...</span>
-        <p id="responseArea" style="color: darkblue; font-weight: bold;"></p>
-    </div>
-</div>
+        javobBox.innerText = "Robot o'ylayapti...";
 
-<script>
-    // 1. Tillar lug'ati
-    const dictionary = {
-        uz: { title: "Xush kelibsiz!", placeholder: "Savol yozing...", btn: "Yuborish", loading: "O'ylamoqda..." },
-        en: { title: "Welcome!", placeholder: "Ask a question...", btn: "Send", loading: "Thinking..." },
-        ru: { title: "Добро пожаловать!", placeholder: "Задайте вопрос...", btn: "Отправить", loading: "Думает..." }
-    };
+        try {
+            let res = await fetch('http://127.0.0', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: msg})
+            });
+            let data = await res.json();
+            javobBox.innerText = data.reply;
 
-    let selectedLang = 'uz';
-
-    // 2. Tilni o'zgartirish funksiyasi
-    function changeLang(lang) {
-        selectedLang = lang;
-        document.getElementById('title').innerText = dictionary[lang].title;
-        document.getElementById('userInput').placeholder = dictionary[lang].placeholder;
-        document.getElementById('sendBtn').innerText = dictionary[lang].btn;
+            // OVOZLI GAPIRTIRISH (Robot gapiradi!)
+            let ovoz = new SpeechSynthesisUtterance(data.reply);
+            ovoz.lang = 'uz-UZ'; 
+            window.speechSynthesis.speak(ovoz);
+        } catch (e) {
+            javobBox.innerText = "Xatolik: Python server (app.py) ishlamayapti!";
+        }
     }
-
-    // 3. AI bilan bog'lanish va Ovoz
-    async function sendToAI() {
-        const text = document.getElementById('userInput').value;
-        const status = document.getElementById('aiStatus');
-        const responseArea = document.getElementById('responseArea');
-
-        status.innerText = dictionary[selectedLang].loading;
-
-        const res = await fetch('/ask_ai', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: text, lang: selectedLang })
-        });
-
-        const data = await res.json();
-        status.innerText = "OK";
-        responseArea.innerText = data.reply;
-
-        // Ovoz chiqarish
-        const speech = new SpeechSynthesisUtterance(data.reply);
-        speech.lang = selectedLang === 'uz' ? 'tr-TR' : (selectedLang === 'en' ? 'en-US' : 'ru-RU');
-        window.speechSynthesis.speak(speech);
-    }
-</script>
-
+    </script>
 </body>
 </html>
