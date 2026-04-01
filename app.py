@@ -2,29 +2,26 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-# AI Robot mantiqi
-def ai_assistant(message):
-    message = message.lower()
-    if "salom" in message:
-        return "Assalomu alaykum! Men tez yordam AI yordamchisiman. Sizga qanday yordam kerak?"
-    elif "yordam" in message or "tez" in message:
-        return "Xavotir olmang, eng yaqin tez yordam mashinasini aniqlayapman. Manzilingizni yubora olasizmi?"
-    elif "doktor" in message:
-        return "Sizni hozir navbatchi shifokor bilan bog'layman."
-    else:
-        return "Tushunmadim, iltimos batafsilroq yozing. Sizga qanday yordam bera olaman?"
-
 @app.route('/')
-def index():
-    # Templates papkasi ichidagi MY_index.html ni ochadi
-    return render_template('MY_index.html')
+def home():
+    return render_template('index.html')
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    data = request.get_json()
-    user_message = data.get("message", "")
-    bot_response = ai_assistant(user_message)
-    return jsonify({"reply": bot_response})
+@app.route('/ask_ai', methods=['POST'])
+def ask_ai():
+    data = request.json
+    user_msg = data.get('message')
+    lang = data.get('lang')
+
+    # Bu yerda AI modeliga (masalan OpenAI) murojaat qilish mumkin
+    # Hozircha oddiy test javobi qaytaramiz:
+    if lang == 'uz':
+        reply = f"AI javobi: Siz '{user_msg}' dedingiz."
+    elif lang == 'en':
+        reply = f"AI Response: You said '{user_msg}'."
+    else:
+        reply = f"Ответ ИИ: Вы сказали '{user_msg}'."
+
+    return jsonify({"reply": reply})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
