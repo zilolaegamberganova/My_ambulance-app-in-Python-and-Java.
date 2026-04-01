@@ -2,77 +2,41 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <title>Ambulance AI Helper</title>
+    <title>AI Ovozli Yordamchi</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .chat-card { width: 400px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        h2 { color: #4F46E5; margin-bottom: 20px; }
-        input { width: 85%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 15px; outline: none; }
-        button { background: #4F46E5; color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 93%; margin-top: 5px;}
-        #javob { margin-top: 20px; color: #1e293b; font-size: 14px; line-height: 1.5; background: #f8fafc; padding: 10px; border-radius: 10px; min-height: 50px; }
-        /* Til tugmalari uchun stil */
-        .lang-box { margin-bottom: 15px; display: flex; justify-content: center; gap: 5px; }
-        .lang-btn { width: auto; padding: 5px 10px; background: #e2e8f0; color: #475569; font-size: 12px; }
-        .active-lang { background: #4F46E5; color: white; }
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 50px; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+        input { width: 80%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 10px; }
+        button { background: #4F46E5; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        #javob { margin-top: 20px; color: #1E293B; line-height: 1.6; }
     </style>
 </head>
 <body>
-    <div class="chat-card">
-        <div class="lang-box">
-            <button class="lang-btn active-lang" onclick="setLang('uz', this)">UZ</button>
-            <button class="lang-btn" onclick="setLang('en', this)">EN</button>
-            <button class="lang-btn" onclick="setLang('ru', this)">RU</button>
-        </div>
-        <h2 id="title">🚑 AI Assistant</h2>
+    <div class="card">
+        <h2>🤖 AI Assistant</h2>
         <input type="text" id="savol" placeholder="Savolingizni yozing...">
-        <button id="sendBtn" onclick="yubor()">➤ So'rash</button>
-        <div id="javob">Javob kutilyapti...</div>
+        <button onclick="yubor()">➤ So'rash</button>
+        <p id="javob">Javobni kuting...</p>
     </div>
 
     <script>
-    let currentLang = 'uz';
-    const ui = {
-        uz: { title: "🚑 AI Assistant", placeholder: "Savolingizni yozing...", btn: "➤ So'rash", wait: "Robot o'ylayapti..." },
-        en: { title: "🚑 AI Assistant", placeholder: "Type your question...", btn: "➤ Ask", wait: "Robot is thinking..." },
-        ru: { title: "🚑 ИИ Помощник", placeholder: "Напишите вопрос...", btn: "➤ Спросить", wait: "Робот думает..." }
-    };
-
-    function setLang(lang, btn) {
-        currentLang = lang;
-        document.getElementById("title").innerText = ui[lang].title;
-        document.getElementById("savol").placeholder = ui[lang].placeholder;
-        document.getElementById("sendBtn").innerText = ui[lang].btn;
-        
-        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active-lang'));
-        btn.classList.add('active-lang');
-    }
-
     async function yubor() {
         let msg = document.getElementById("savol").value;
-        let javobBox = document.getElementById("javob");
         if(!msg) return;
 
-        javobBox.innerText = ui[currentLang].wait;
+        // Python (app.py) bilan bog'lanish
+        let res = await fetch('/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: msg})
+        });
+        let data = await res.json();
+        document.getElementById("javob").innerText = data.reply;
 
-        try {
-            // Render yoki Localhostda ishlashi uchun '/chat' deb yozish yetarli
-            let res = await fetch('/chat', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: msg, lang: currentLang})
-            });
-            let data = await res.json();
-            javobBox.innerText = data.reply;
-
-            // OVOZLI GAPIRTIRISH
-            let ovoz = new SpeechSynthesisUtterance(data.reply);
-            if(currentLang === 'uz') ovoz.lang = 'tr-TR'; // O'zbekchaga eng yaqini
-            else if(currentLang === 'en') ovoz.lang = 'en-US';
-            else ovoz.lang = 'ru-RU';
-            window.speechSynthesis.speak(ovoz);
-        } catch (e) {
-            javobBox.innerText = "Xatolik yuz berdi!";
-        }
+        // OVOZLI GAPIRTIRISH (Eng muhimi!)
+        let ovoz = new SpeechSynthesisUtterance(data.reply);
+        ovoz.lang = 'uz-UZ'; // O'zbek tili (yoki ru-RU)
+        window.speechSynthesis.speak(ovoz);
     }
     </script>
 </body>
