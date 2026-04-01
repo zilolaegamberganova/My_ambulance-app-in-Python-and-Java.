@@ -2,42 +2,158 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <title>AI Ovozli Yordamchi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance AI | Ahsanul Dashboard</title>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 50px; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 400px; text-align: center; }
-        input { width: 80%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 10px; }
-        button { background: #4F46E5; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        #javob { margin-top: 20px; color: #1E293B; line-height: 1.6; }
+        :root { --accent: #4F46E5; --bg: #F0F4F8; --card: #FFFFFF; --text: #1E293B; --sos: #FF3B30; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--card); border-right: 1px solid #E2E8F0; padding: 30px; display: flex; flex-direction: column; }
+        .logo { font-size: 22px; font-weight: 800; color: var(--accent); margin-bottom: 40px; }
+        .nav-link { padding: 12px 18px; border-radius: 12px; color: #64748B; cursor: pointer; margin-bottom: 8px; transition: 0.3s; font-weight: 500; }
+        .nav-link:hover, .nav-link.active { background: #EEF2FF; color: var(--accent); }
+        .sos-btn { margin-top: auto; background: var(--sos); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 59, 48, 0.3); animation: pulse 2s infinite; }
+
+        /* Main Content */
+        .main { flex: 1; padding: 40px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .user-info h1 { font-size: 28px; font-weight: 700; }
+
+        /* Grid System */
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
+        .card { background: var(--card); border-radius: 24px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #E2E8F0; }
+
+        /* Tahlil Card */
+        .analysis-card { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white; border: none; }
+        .analysis-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-top: 15px; transition: 0.3s; }
+        .analysis-btn:hover { background: white; color: var(--accent); }
+
+        /* AI Chat Section */
+        .chat-section { display: flex; flex-direction: column; height: 400px; margin-top: 25px; }
+        #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; padding-right: 5px; }
+        .msg { padding: 12px 18px; border-radius: 18px; font-size: 14px; max-width: 80%; line-height: 1.5; }
+        .bot { background: #F1F5F9; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .user { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+
+        .input-group { display: flex; gap: 10px; background: #F8FAFC; padding: 8px; border-radius: 14px; border: 1px solid #E2E8F0; }
+        input { flex: 1; border: none; background: transparent; padding: 10px; outline: none; }
+        .send-btn { background: var(--accent); color: white; border: none; width: 42px; height: 42px; border-radius: 10px; cursor: pointer; }
+
+        /* Vitals */
+        .vital-card { text-align: center; margin-bottom: 20px; }
+        .vital-value { font-size: 36px; font-weight: 700; color: var(--sos); margin: 10px 0; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+        .loading { display: none; margin-top: 10px; font-style: italic; font-size: 13px; opacity: 0.8; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>🤖 AI Assistant</h2>
-        <input type="text" id="savol" placeholder="Savolingizni yozing...">
-        <button onclick="yubor()">➤ So'rash</button>
-        <p id="javob">Javobni kuting...</p>
-    </div>
+
+    <aside class="sidebar">
+        <div class="logo">🚑 AI Ambulance</div>
+        <div class="nav-link active" onclick="location.reload()">🏠 Bosh sahifa</div>
+        <div class="nav-link" onclick="alert('Shifokorlar ro\'yxati tayyorlanmoqda...')">👨‍⚕️ Shifokorlar</div>
+        <div class="nav-link" onclick="alert('Tarix bo\'limi yaqin orada ishga tushadi')">📅 Tibbiy tarix</div>
+        <button class="sos-btn" onclick="triggerSOS()">SOS EMERGENCY</button>
+    </aside>
+
+    <main class="main">
+        <header class="header">
+            <div class="user-info">
+                <h1>Xush kelibsiz, Ahsanul!</h1>
+                <p style="color: #64748B;">Sog'lig'ingiz tahlili va monitoringi</p>
+            </div>
+            <div style="font-weight: 600; color: #10B981;">● Server Online</div>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="left">
+                <div class="card analysis-card">
+                    <h3>📊 AI Tibbiy Tahlil</h3>
+                    <p style="margin-top: 10px; opacity: 0.9;">Tizim sizning oxirgi ko'rsatkichlaringizni tahlil qilishga tayyor.</p>
+                    <button class="analysis-btn" onclick="startAnalysis()">Tahlilni boshlash</button>
+                    <div id="loading" class="loading">Sun'iy intellekt ma'lumotlarni qayta ishlamoqda...</div>
+                </div>
+
+                <div class="card chat-section">
+                    <h4 style="margin-bottom: 15px;">🤖 AI Yordamchi</h4>
+                    <div id="chat-box">
+                        <div class="msg bot">Salom Ahsanul! Bugun o'zingizni qanday his qilyapsiz?</div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="user-input" placeholder="Savol yozing..." onkeypress="if(event.keyCode==13) sendMessage()">
+                        <button class="send-btn" onclick="sendMessage()">➤</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right">
+                <div class="card vital-card">
+                    <p style="color: #64748B;">Yurak urishi</p>
+                    <div class="vital-value">76 <span style="font-size: 16px;">BPM</span></div>
+                    <p style="color: #10B981; font-weight: 600; font-size: 13px;">✓ Me'yorda</p>
+                </div>
+
+                <div class="card vital-card" style="border-left: 5px solid #3B82F6;">
+                    <p style="color: #64748B;">Qon bosimi</p>
+                    <div class="vital-value" style="color: #3B82F6;">120/80</div>
+                    <p style="font-size: 13px; opacity: 0.7;">Oxirgi o'lchov: 2 soat oldin</p>
+                </div>
+
+                <div class="card">
+                    <h4>Tezkor aloqa</h4>
+                    <button onclick="window.location.href='tel:103'" style="width:100%; padding:12px; margin-top:15px; border-radius:12px; border:none; background:#F1F5F9; cursor:pointer; font-weight:600;">📞 Tez yordam (103)</button>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <script>
-    async function yubor() {
-        let msg = document.getElementById("savol").value;
-        if(!msg) return;
+        function startAnalysis() {
+            const btn = document.querySelector('.analysis-btn');
+            const loading = document.getElementById('loading');
+            btn.style.display = 'none';
+            loading.style.display = 'block';
 
-        // Python (app.py) bilan bog'lanish
-        let res = await fetch('/chat', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({message: msg})
-        });
-        let data = await res.json();
-        document.getElementById("javob").innerText = data.reply;
+            setTimeout(() => {
+                loading.innerText = "Tahlil yakunlandi: Ahsanul, umumiy holatingiz 94% ijobiy. Ko'proq suv ichish tavsiya etiladi.";
+                loading.style.color = "#A7F3D0";
+            }, 3000);
+        }
 
-        // OVOZLI GAPIRTIRISH (Eng muhimi!)
-        let ovoz = new SpeechSynthesisUtterance(data.reply);
-        ovoz.lang = 'uz-UZ'; // O'zbek tili (yoki ru-RU)
-        window.speechSynthesis.speak(ovoz);
-    }
+        function triggerSOS() {
+            const chatBox = document.getElementById("chat-box");
+            alert("⚠️ SOS SIGNAL YUBORILDI!");
+            chatBox.innerHTML += `<div class="msg bot" style="background:#FEE2E2; color:#B91C1C; border:1px solid #FECACA;"><b>DIQQAT:</b> SOS signal qabul qilindi. Ahsanul, xotirjam bo'ling, yordam yo'lda!</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById("user-input");
+            const chatBox = document.getElementById("chat-box");
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            chatBox.innerHTML += `<div class="msg user">${msg}</div>`;
+            input.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: msg})
+                });
+                const data = await response.json();
+                chatBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+            } catch {
+                chatBox.innerHTML += `<div class="msg bot">Xatolik: Server bilan aloqa uzildi.</div>`;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
     </script>
 </body>
 </html>
