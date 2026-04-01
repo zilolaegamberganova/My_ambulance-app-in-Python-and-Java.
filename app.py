@@ -1,27 +1,28 @@
-from flask import Flask, render_template, request, jsonify
+import requests
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+# Hugging Face'dan olgan hf_...XpGN kodingizni shu yerga qo'ying
+API_TOKEN = "hf_...XpGN" 
+API_URL = "https://huggingface.co"
+headers = {"Authorization": f"Bearer {API_TOKEN}"}
 
-@app.route('/ask_ai', methods=['POST'])
-def ask_ai():
+def ai_assistant(message):
+    try:
+        payload = {"inputs": f"Siz aqlli yordamchisiz. Savol: {message}", "parameters": {"max_new_tokens": 200}}
+        response = requests.post(API_URL, headers=headers, json=payload)
+        output = response.json()
+        return output[0]['generated_text'].split("Savol:")[-1].strip()
+    except:
+        return "Kechirasiz, hozircha javob bera olmayman."
+
+@app.route('/chat', methods=['POST'])
+def chat():
     data = request.json
-    user_msg = data.get('message')
-    lang = data.get('lang')
-
-    # Bu yerda AI modeliga (masalan OpenAI) murojaat qilish mumkin
-    # Hozircha oddiy test javobi qaytaramiz:
-    if lang == 'uz':
-        reply = f"AI javobi: Siz '{user_msg}' dedingiz."
-    elif lang == 'en':
-        reply = f"AI Response: You said '{user_msg}'."
-    else:
-        reply = f"Ответ ИИ: Вы сказали '{user_msg}'."
-
-    return jsonify({"reply": reply})
+    user_msg = data.get("message")
+    bot_reply = ai_assistant(user_msg)
+    return jsonify({"reply": bot_reply})
 
 if __name__ == '__main__':
     app.run(debug=True)
