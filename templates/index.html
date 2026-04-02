@@ -49,19 +49,17 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
         .loading { display: none; margin-top: 10px; font-style: italic; font-size: 13px; opacity: 0.8; }
         
-        /* Til tugmalari uchun qo'shimcha stil */
-        .lang-switch { display: flex; gap: 5px; margin-bottom: 15px; }
-        .lang-switch button { cursor: pointer; background: white; border: 1px solid #ddd; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; transition: 0.2s; }
-        .lang-switch button:hover { background: #4F46E5; color: white; }
+        .lang-switch { display: flex; gap: 5px; margin-bottom: 10px; }
+        .lang-switch button { cursor: pointer; background: white; border: 1px solid #ddd; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
         <div class="logo">🚑 AI Ambulance</div>
-        <div class="nav-link active" id="home-link" onclick="location.reload()">🏠 Bosh sahifa</div>
-        <div class="nav-link" id="docs-link" onclick="alert('Doctors list is being prepared...')">👨‍⚕️ Shifokorlar</div>
-        <div class="nav-link" id="history-link" onclick="alert('Medical history will be available soon')">📅 Tibbiy tarix</div>
+        <div class="nav-link active" onclick="location.reload()">🏠 <span id="nav-home">Bosh sahifa</span></div>
+        <div class="nav-link" onclick="showInfo('doctors')">👨‍⚕️ <span id="nav-docs">Shifokorlar</span></div>
+        <div class="nav-link" onclick="showInfo('history')">📅 <span id="nav-history">Tibbiy tarix</span></div>
         <button class="sos-btn" onclick="triggerSOS()">SOS EMERGENCY</button>
     </aside>
 
@@ -82,16 +80,19 @@
         <div class="dashboard-grid">
             <div class="left">
                 <div class="card analysis-card">
-                    <h3 id="analysis-title">📊 AI Tibbiy Tahlil</h3>
-                    <p id="analysis-desc" style="margin-top: 10px; opacity: 0.9;">Tizim sizning oxirgi ko'rsatkichlaringizni tahlil qilishga tayyor.</p>
-                    <button class="analysis-btn" id="analysis-btn" onclick="startAnalysis()">Tahlilni boshlash</button>
+                    <h3 id="anal-title">📊 AI Tibbiy Tahlil</h3>
+                    <p id="anal-desc" style="margin-top: 10px; opacity: 0.9;">Tizim sizning oxirgi ko'rsatkichlaringizni tahlil qilishga tayyor.</p>
+                    <button class="analysis-btn" id="anal-btn" onclick="startAnalysis()">Tahlilni boshlash</button>
                     <div id="loading" class="loading">Sun'iy intellekt ma'lumotlarni qayta ishlamoqda...</div>
                 </div>
 
                 <div class="card chat-section">
-                    <h4 id="ai-title" style="margin-bottom: 15px;">🤖 AI Yordamchi</h4>
+                    <h4 style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <img src="https://flaticon.com" width="25"> 
+                        <span id="ai-title">AI Yordamchi</span>
+                    </h4>
                     <div id="chat-box">
-                        <div class="msg bot" id="bot-first-msg">Salom Ahsanul! Bugun o'zingizni qanday his qilyapsiz?</div>
+                        <div class="msg bot" id="bot-msg">Salom Ahsanul! Bugun o'zingizni qanday his qilyapsiz?</div>
                     </div>
                     <div class="input-group">
                         <input type="text" id="user-input" placeholder="Savol yozing..." onkeypress="if(event.keyCode==13) sendMessage()">
@@ -104,18 +105,16 @@
                 <div class="card vital-card">
                     <p id="pulse-text" style="color: #64748B;">Yurak urishi</p>
                     <div class="vital-value">76 <span style="font-size: 16px;">BPM</span></div>
-                    <p id="status-ok" style="color: #10B981; font-weight: 600; font-size: 13px;">✓ Me'yorda</p>
+                    <p id="pulse-status" style="color: #10B981; font-weight: 600; font-size: 13px;">✓ Me'yorda</p>
                 </div>
-
                 <div class="card vital-card" style="border-left: 5px solid #3B82F6;">
                     <p id="pressure-text" style="color: #64748B;">Qon bosimi</p>
                     <div class="vital-value" style="color: #3B82F6;">120/80</div>
-                    <p id="last-measure" style="font-size: 13px; opacity: 0.7;">Oxirgi o'lchov: 2 soat oldin</p>
+                    <p id="pressure-status" style="font-size: 13px; opacity: 0.7;">Oxirgi o'lchov: 2 soat oldin</p>
                 </div>
-
                 <div class="card">
-                    <h4 id="quick-contact">Tezkor aloqa</h4>
-                    <button onclick="window.location.href='tel:103'" style="width:100%; padding:12px; margin-top:15px; border-radius:12px; border:none; background:#F1F5F9; cursor:pointer; font-weight:600;">📞 <span id="ambulance-call">Tez yordam (103)</span></button>
+                    <h4 id="contact-title">Tezkor aloqa</h4>
+                    <button onclick="window.location.href='tel:103'" style="width:100%; padding:12px; margin-top:15px; border-radius:12px; border:none; background:#F1F5F9; cursor:pointer; font-weight:600;">📞 <span id="call-text">Tez yordam (103)</span></button>
                 </div>
             </div>
         </div>
@@ -124,26 +123,50 @@
     <script>
         let currentLang = 'uz';
 
+        function setLanguage(lang) {
+            currentLang = lang;
+            const ui = {
+                uz: { welcome: "Xush kelibsiz, Ahsanul!", sub: "Sog'lig'ingiz tahlili", ph: "Savol yozing...", home: "Bosh sahifa", docs: "Shifokorlar", hist: "Tarix", bot: "Salom! Qanday yordam bera olaman?" },
+                en: { welcome: "Welcome, Ahsanul!", sub: "Health analysis & monitoring", ph: "Type your message...", home: "Home", docs: "Doctors", hist: "History", bot: "Hello! How can I help you today?" },
+                ru: { welcome: "Добро пожаловать!", sub: "Анализ и мониторинг", ph: "Напишите вопрос...", home: "Главная", docs: "Врачи", hist: "История", bot: "Привет! Чем я могу помочь?" }
+            };
+            document.getElementById('welcome-text').innerText = ui[lang].welcome;
+            document.getElementById('sub-text').innerText = ui[lang].sub;
+            document.getElementById('user-input').placeholder = ui[lang].ph;
+            document.getElementById('nav-home').innerText = ui[lang].home;
+            document.getElementById('nav-docs').innerText = ui[lang].docs;
+            document.getElementById('nav-history').innerText = ui[lang].hist;
+            document.getElementById('bot-msg').innerText = ui[lang].bot;
+        }
+
+        function showInfo(type) {
+            const chatBox = document.getElementById("chat-box");
+            let info = type === 'doctors' ? (currentLang === 'uz' ? "Navbatchi shifokor: Dr. Alisher (Kardiolog)." : "Doctor on duty: Dr. Alisher (Cardiologist).") : (currentLang === 'uz' ? "Oxirgi ko'rik: 15-mart. Natijalar ijobiy." : "Last checkup: March 15. Vitals are stable.");
+            chatBox.innerHTML += `<div class="msg bot">${info}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            speak(info);
+        }
+
         function startAnalysis() {
             const btn = document.querySelector('.analysis-btn');
             const loading = document.getElementById('loading');
             btn.style.display = 'none';
             loading.style.display = 'block';
-
             setTimeout(() => {
-                loading.innerText = currentLang === 'uz' ? "Tahlil yakunlandi: Ahsanul, umumiy holatingiz 94% ijobiy. Ko'proq suv ichish tavsiya etiladi." : "Analysis complete: Ahsanul, your overall health is 94% positive. More water is recommended.";
+                let result = currentLang === 'uz' ? "Tahlil tayyor: Ahsanul, sog'lig'ingiz 94% ajoyib!" : "Analysis ready: Ahsanul, your health is 94% excellent!";
+                loading.innerText = result;
                 loading.style.color = "#A7F3D0";
-                speak(loading.innerText);
+                speak(result);
             }, 3000);
         }
 
         function triggerSOS() {
             const chatBox = document.getElementById("chat-box");
-            alert(currentLang === 'en' ? "⚠️ SOS SIGNAL SENT!" : "⚠️ SOS SIGNAL YUBORILDI!");
-            const sosMsg = currentLang === 'en' ? "<b>NOTICE:</b> SOS signal received. Ahsanul, stay calm, help is on the way!" : "<b>DIQQAT:</b> SOS signal qabul qilindi. Ahsanul, xotirjam bo'ling, yordam yo'lda!";
-            chatBox.innerHTML += `<div class="msg bot" style="background:#FEE2E2; color:#B91C1C; border:1px solid #FECACA;">${sosMsg}</div>`;
+            alert(currentLang === 'en' ? "⚠️ SOS SENT!" : "⚠️ SOS YUBORILDI!");
+            let sos = currentLang === 'en' ? "Help is on the way!" : "Yordam yo'lda!";
+            chatBox.innerHTML += `<div class="msg bot" style="background:#FEE2E2;"><b>SOS:</b> ${sos}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
-            speak(sosMsg.replace(/<b>|<\/b>/g, ""));
+            speak(sos);
         }
 
         async function sendMessage() {
@@ -151,50 +174,27 @@
             const chatBox = document.getElementById("chat-box");
             const msg = input.value.trim();
             if(!msg) return;
-
             chatBox.innerHTML += `<div class="msg user">${msg}</div>`;
             input.value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
-
             try {
-                const response = await fetch('/chat', {
+                const res = await fetch('/chat', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({message: msg})
                 });
-                const data = await response.json();
+                const data = await res.json();
                 chatBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
                 speak(data.reply);
             } catch (e) {
-                chatBox.innerHTML += `<div class="msg bot">Error: Server offline</div>`;
+                chatBox.innerHTML += `<div class="msg bot">Error: Offline</div>`;
             }
-        }
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            const ui = {
-                uz: { welcome: "Xush kelibsiz, Ahsanul!", sub: "Sog'lig'ingiz tahlili va monitoringi", ph: "Savol yozing...", sidebar_h: "🏠 Bosh sahifa", sidebar_d: "👨‍⚕️ Shifokorlar", sidebar_t: "📅 Tibbiy tarix", anal_t: "📊 AI Tibbiy Tahlil", anal_d: "Tizim sizning oxirgi ko'rsatkichlaringizni tahlil qilishga tayyor.", anal_b: "Tahlilni boshlash" },
-                en: { welcome: "Welcome, Ahsanul!", sub: "Health analysis and monitoring", ph: "Type your message...", sidebar_h: "🏠 Home", sidebar_d: "👨‍⚕️ Doctors", sidebar_t: "📅 History", anal_t: "📊 AI Health Analysis", anal_d: "System is ready to analyze your latest vitals.", anal_b: "Start Analysis" },
-                ru: { welcome: "Добро пожаловать, Ахсанул!", sub: "Анализ и мониторинг здоровья", ph: "Напишите сообщение...", sidebar_h: "🏠 Главная", sidebar_d: "👨‍⚕️ Врачи", sidebar_t: "📅 История", anal_t: "📊 ИИ Анализ здоровья", anal_d: "Система готова к анализу показателей.", anal_b: "Начать анализ" }
-            };
-
-            document.getElementById('welcome-text').innerText = ui[lang].welcome;
-            document.getElementById('sub-text').innerText = ui[lang].sub;
-            document.getElementById('user-input').placeholder = ui[lang].ph;
-            document.getElementById('home-link').innerText = ui[lang].sidebar_h;
-            document.getElementById('docs-link').innerText = ui[lang].sidebar_d;
-            document.getElementById('history-link').innerText = ui[lang].sidebar_t;
-            document.getElementById('analysis-title').innerText = ui[lang].anal_t;
-            document.getElementById('analysis-desc').innerText = ui[lang].anal_d;
-            document.getElementById('analysis-btn').innerText = ui[lang].anal_b;
         }
 
         function speak(text) {
             const utterance = new SpeechSynthesisUtterance(text);
-            if(currentLang === 'en') utterance.lang = 'en-US';
-            else if(currentLang === 'ru') utterance.lang = 'ru-RU';
-            else utterance.lang = 'tr-TR';
+            utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'ru' ? 'ru-RU' : 'tr-TR');
             window.speechSynthesis.speak(utterance);
         }
     </script>
