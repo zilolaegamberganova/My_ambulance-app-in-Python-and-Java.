@@ -1,76 +1,76 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ambulance AI | Ahsanul Dashboard</title>
+    <title>Ambulance AI | Medical Intelligence</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --accent: #4F46E5; --bg: #F0F4F8; --card: #FFFFFF; --text: #1E293B; --sos: #FF3B30; --success: #10B981; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Sidebar */
-        .sidebar { width: 280px; background: var(--card); border-right: 1px solid #E2E8F0; padding: 30px; display: flex; flex-direction: column; z-index: 100; }
+        /* Sidebar Styling */
+        .sidebar { width: 280px; background: var(--card); border-right: 1px solid #E2E8F0; padding: 30px; display: flex; flex-direction: column; }
         .logo { font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
-        .nav-link { padding: 14px 18px; border-radius: 14px; color: #64748B; cursor: pointer; margin-bottom: 10px; transition: 0.3s; font-weight: 500; display: flex; align-items: center; gap: 12px; }
+        .nav-link { padding: 14px 18px; border-radius: 14px; color: #64748B; cursor: pointer; margin-bottom: 10px; transition: 0.3s; font-weight: 600; display: flex; align-items: center; gap: 12px; }
         .nav-link:hover, .nav-link.active { background: #EEF2FF; color: var(--accent); }
         .sos-btn { margin-top: auto; background: var(--sos); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(255, 59, 48, 0.3); animation: pulse 2s infinite; }
 
-        /* Main Content */
-        .main { flex: 1; padding: 40px; overflow-y: auto; position: relative; }
+        /* Main Content Area */
+        .main { flex: 1; padding: 40px; overflow-y: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
-        .user-info h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
+        .user-info h1 { font-size: 30px; font-weight: 800; }
 
         /* Dashboard Grid */
         .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
         .card { background: var(--card); border-radius: 28px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; }
 
-        /* Analysis & Chat */
-        .analysis-card { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white; border: none; position: relative; overflow: hidden; }
+        /* Analysis Card */
+        .analysis-card { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white; border: none; }
         .analysis-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 12px 25px; border-radius: 14px; cursor: pointer; font-weight: 600; margin-top: 20px; transition: 0.3s; }
         .analysis-btn:hover { background: white; color: var(--accent); }
 
+        /* AI Chat Section - ChatGPT Style */
         .chat-section { display: flex; flex-direction: column; height: 450px; margin-top: 30px; }
         #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; padding-right: 10px; }
-        .msg { padding: 14px 20px; border-radius: 20px; font-size: 14px; max-width: 85%; line-height: 1.6; position: relative; }
-        .bot { background: #F1F5F9; align-self: flex-start; border-bottom-left-radius: 4px; color: var(--text); }
+        .msg { padding: 14px 20px; border-radius: 20px; font-size: 14px; max-width: 85%; line-height: 1.6; }
+        .bot { background: #F1F5F9; align-self: flex-start; border-bottom-left-radius: 4px; }
         .user { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
 
-        /* Input Controls */
-        .input-group { display: flex; gap: 12px; background: #F8FAFC; padding: 10px; border-radius: 18px; border: 1px solid #E2E8F0; align-items: center; }
-        input { flex: 1; border: none; background: transparent; padding: 12px; outline: none; font-size: 15px; }
-        .action-btn { background: var(--accent); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .mic-btn { background: #E2E8F0; color: #64748B; }
-        .mic-btn.recording { background: var(--sos); color: white; }
+        /* ChatGPT Input Group with Mic and Black Voice Button */
+        .input-group { display: flex; gap: 12px; background: #F8FAFC; padding: 8px 15px; border-radius: 30px; border: 1px solid #E2E8F0; align-items: center; }
+        input { flex: 1; border: none; background: transparent; padding: 10px; outline: none; font-size: 15px; }
+        .mic-btn { background: none; border: none; cursor: pointer; color: #64748B; font-size: 20px; }
+        .voice-mode-btn { background: #000; color: white; width: 42px; height: 42px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .voice-mode-btn.active { background: var(--success); box-shadow: 0 0 15px var(--success); }
 
-        /* Modals & Info */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal-content { background: white; width: 95%; max-width: 650px; padding: 40px; border-radius: 32px; position: relative; max-height: 90vh; overflow-y: auto; }
-        .close-modal { position: absolute; right: 25px; top: 25px; font-size: 28px; cursor: pointer; border: none; background: none; color: #94A3B8; }
-        .info-item { display: flex; gap: 20px; background: #F8FAFC; padding: 20px; border-radius: 20px; margin-bottom: 20px; align-items: center; border: 1px solid #E2E8F0; }
-        .video-wrapper { border-radius: 22px; overflow: hidden; margin-top: 25px; background: #000; position: relative; padding-bottom: 56.25%; height: 0; }
-        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        /* New Page / Modal Styling */
+        .page-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .page-content { background: white; width: 90%; max-width: 700px; padding: 40px; border-radius: 35px; position: relative; max-height: 85vh; overflow-y: auto; }
+        .close-page { position: absolute; right: 30px; top: 30px; font-size: 28px; cursor: pointer; border: none; background: none; color: #94A3B8; }
+        .info-card { display: flex; gap: 20px; background: #F8FAFC; padding: 20px; border-radius: 20px; margin-bottom: 20px; align-items: center; border: 1px solid #E2E8F0; }
+        .video-box { border-radius: 25px; overflow: hidden; margin-top: 25px; background: #000; position: relative; padding-bottom: 56.25%; height: 0; }
+        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        /* Vitals & Language */
-        .vital-value { font-size: 40px; font-weight: 800; color: var(--sos); margin: 15px 0; }
+        /* Vitals */
+        .vital-value { font-size: 42px; font-weight: 800; color: var(--sos); margin: 15px 0; }
         .lang-switch { display: flex; gap: 8px; margin-bottom: 15px; }
         .lang-switch button { cursor: pointer; background: white; border: 1px solid #E2E8F0; padding: 6px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; transition: 0.3s; }
-        .lang-switch button.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .lang-switch button.active { background: var(--accent); color: white; }
 
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(255, 59, 48, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); } }
-        .loading-text { display: none; margin-top: 15px; font-weight: 600; font-size: 14px; color: #E0E7FF; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .loading { display: none; margin-top: 15px; font-weight: 700; color: #A7F3D0; }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
-        <div class="logo"><span>🚑</span> AI Ambulance</div>
-        <div class="nav-link active" onclick="location.reload()">🏠 <span id="l-home">Bosh sahifa</span></div>
-        <div class="nav-link" onclick="showPage('doctors')">👨‍⚕️ <span id="l-docs">Shifokorlar</span></div>
-        <div class="nav-link" onclick="showPage('history')">📅 <span id="l-hist">Tibbiy tarix</span></div>
-        <div class="nav-link" onclick="showPage('community')">👥 <span id="l-comm">Community</span></div>
-        <div class="nav-link" onclick="showPage('account')">⚙️ <span id="l-acc">Account</span></div>
+        <div class="logo">🚑 AI Ambulance</div>
+        <div class="nav-link active" onclick="location.reload()">🏠 <span id="l-home">Home</span></div>
+        <div class="nav-link" onclick="openPage('doctors')">👨‍⚕️ <span id="l-docs">Doctors</span></div>
+        <div class="nav-link" onclick="openPage('history')">📅 <span id="l-hist">History</span></div>
+        <div class="nav-link" onclick="openPage('settings')">⚙️ <span id="l-sett">Settings</span></div>
         <button class="sos-btn" onclick="sendSOS()">SOS EMERGENCY</button>
     </aside>
 
@@ -78,150 +78,127 @@
         <header class="header">
             <div class="user-info">
                 <div class="lang-switch">
-                    <button id="btn-uz" class="active" onclick="changeLang('uz')">UZ</button>
-                    <button id="btn-en" onclick="changeLang('en')">EN</button>
-                    <button id="btn-ru" onclick="changeLang('ru')">RU</button>
+                    <button id="b-uz" class="active" onclick="changeLang('uz')">UZ</button>
+                    <button id="b-en" onclick="changeLang('en')">EN</button>
+                    <button id="b-ru" onclick="changeLang('ru')">RU</button>
                 </div>
-                <h1 id="txt-welcome">Xush kelibsiz, Ahsanul!</h1>
-                <p id="txt-sub" style="color: #64748B;">Monitoring tizimi faol holatda</p>
+                <h1 id="txt-welcome">Medical Dashboard</h1>
+                <p id="txt-sub" style="color: #64748B;">AI-Powered Health Monitoring</p>
             </div>
-            <div style="font-weight: 700; color: var(--success); display: flex; align-items: center; gap: 8px;">
-                <span style="width: 10px; height: 10px; background: var(--success); border-radius: 50%;"></span>
-                AI SERVER ONLINE
-            </div>
+            <div style="font-weight: 700; color: var(--success);">● SERVER ONLINE</div>
         </header>
 
         <div class="dashboard-grid">
             <div class="left">
                 <div class="card analysis-card">
-                    <h3 id="txt-anal-t">📊 AI Smart Analysis</h3>
-                    <p id="txt-anal-d" style="margin-top: 12px; opacity: 0.9;">Hozirgi ko'rsatkichlaringiz bo'yicha sun'iy intellekt tahlilini boshlang.</p>
-                    <button class="analysis-btn" id="btn-anal" onclick="runAnalysis()">Tahlilni boshlash</button>
-                    <div id="load-box" class="loading-text">Sun'iy intellekt ma'lumotlarni qayta ishlamoqda...</div>
+                    <h3>📊 AI Health Insights</h3>
+                    <p style="margin-top: 12px; opacity: 0.9;">Analyze your latest data using neural networks.</p>
+                    <button class="analysis-btn" onclick="runAnalysis()">Start Analysis</button>
+                    <div id="load-box" class="loading">Processing Data...</div>
                 </div>
 
                 <div class="card chat-section">
-                    <h4 style="margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                    <h4 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                         <img src="https://flaticon.com" width="30">
-                        <span id="txt-ai-h">AI Medical Assistant</span>
+                        <span>AI Assistant</span>
                     </h4>
                     <div id="chat-box">
-                        <div class="msg bot">Salom Ahsanul! Bugun sog'lig'ingiz haqida savollaringiz bormi?</div>
+                        <div class="msg bot">System ready. How can I assist you today?</div>
                     </div>
                     <div class="input-group">
-                        <button class="action-btn mic-btn" id="mic-btn" onclick="startSpeech()">🎤</button>
-                        <input type="text" id="user-input" placeholder="Xabar yozing..." onkeypress="if(event.keyCode==13) sendMessage()">
-                        <button class="action-btn" onclick="sendMessage()">➤</button>
+                        <button class="mic-btn" onclick="startSTT()">🎤</button>
+                        <input type="text" id="user-input" placeholder="Type a message..." onkeypress="if(event.keyCode==13) sendMessage()">
+                        <button class="voice-mode-btn" id="voice-toggle" onclick="toggleVoiceMode()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 3v18M8 7v10M4 10v4M16 7v10M20 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round""")/>></svg>
+                        </button>
                     </div>
                 </div>
             </div>
 
             <div class="right">
                 <div class="card vital-card">
-                    <p style="color: #64748B; font-weight: 600;">Yurak urishi (Pulse)</p>
+                    <p style="color: #64748B; font-weight: 600;">Pulse Rate</p>
                     <div class="vital-value">76 <span style="font-size: 18px; color: #94A3B8;">BPM</span></div>
-                    <p style="color: var(--success); font-weight: 700; font-size: 14px;">✓ NORMAL</p>
+                    <p style="color: var(--success); font-weight: 700;">✓ NORMAL</p>
                 </div>
                 <div class="card vital-card" style="border-left: 6px solid #3B82F6;">
-                    <p style="color: #64748B; font-weight: 600;">Qon bosimi (BP)</p>
+                    <p style="color: #64748B; font-weight: 600;">Blood Pressure</p>
                     <div class="vital-value" style="color: #3B82F6;">120/80</div>
-                    <p style="font-size: 13px; color: #94A3B8; font-weight: 500;">Oxirgi o'lchov: 2 soat oldin</p>
+                    <p style="font-size: 13px; opacity: 0.7;">Measured: 2 hours ago</p>
                 </div>
                 <div class="card">
-                    <h4 id="txt-quick">Tezkor Yordam</h4>
-                    <button onclick="window.location.href='tel:103'" style="width:100%; padding:15px; margin-top:20px; border-radius:16px; border:none; background:#F1F5F9; cursor:pointer; font-weight:700; color: var(--text);">📞 TEZ YORDAM: 103</button>
+                    <h4>Quick Access</h4>
+                    <button onclick="window.location.href='tel:103'" style="width:100%; padding:15px; margin-top:20px; border-radius:18px; border:none; background:#F1F5F9; cursor:pointer; font-weight:700;">📞 CALL AMBULANCE (103)</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- UI MODAL WINDOW (Varoq) -->
-    <div id="uiModal" class="modal-overlay" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-modal" onclick="closeModal()">&times;</button>
-            <div id="modalContent"></div>
+    <!-- Full Screen Page Overlay -->
+    <div id="pageOverlay" class="page-overlay" onclick="closePage()">
+        <div class="page-content" onclick="event.stopPropagation()">
+            <button class="close-page" onclick="closePage()">&times;</button>
+            <div id="pageBody"></div>
         </div>
     </div>
 
     <script>
-        let currentLang = 'uz';
+        let currentLang = 'en';
+        let isVoiceMode = false;
         const synth = window.speechSynthesis;
 
-        // 1. TIL LUG'ATI
-        const langDict = {
-            uz: { home: "Bosh sahifa", docs: "Shifokorlar", hist: "Tarix", comm: "Jamiyat", acc: "Profil", welcome: "Xush kelibsiz, Ahsanul!", sub: "Monitoring tizimi faol", anal_t: "📊 AI Smart Tahlil", anal_b: "Tahlilni boshlash", ph: "Savol yozing...", quick: "Tezkor aloqa" },
-            en: { home: "Home", docs: "Doctors", hist: "History", comm: "Community", acc: "Account", welcome: "Welcome, Ahsanul!", sub: "Monitoring active", anal_t: "📊 AI Smart Analysis", anal_b: "Start Analysis", ph: "Type a message...", quick: "Quick Contact" },
-            ru: { home: "Главная", docs: "Врачи", hist: "История", comm: "Сообщество", acc: "Профиль", welcome: "Добро пожаловать!", sub: "Мониторинг активен", anal_t: "📊 ИИ Анализ", anal_b: "Начать анализ", ph: "Напишите...", quick: "Быстрая связь" }
-        };
-
-        function changeLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('.lang-switch button').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + lang).classList.add('active');
-            
-            document.getElementById('l-home').innerText = langDict[lang].home;
-            document.getElementById('l-docs').innerText = langDict[lang].docs;
-            document.getElementById('l-hist').innerText = langDict[lang].hist;
-            document.getElementById('l-comm').innerText = langDict[lang].comm;
-            document.getElementById('l-acc').innerText = langDict[lang].acc;
-            document.getElementById('txt-welcome').innerText = langDict[lang].welcome;
-            document.getElementById('txt-sub').innerText = langDict[lang].sub;
-            document.getElementById('txt-anal-t').innerText = langDict[lang].anal_t;
-            document.getElementById('btn-anal').innerText = langDict[lang].anal_b;
-            document.getElementById('user-input').placeholder = langDict[lang].ph;
-            document.getElementById('txt-quick').innerText = langDict[lang].quick;
-        }
-
-        // 2. MODAL SAHIFALAR (Doctors, History, Community)
-        function showPage(type) {
-            const modal = document.getElementById('uiModal');
-            const content = document.getElementById('modalContent');
-            modal.style.display = 'flex';
-
-            if (type === 'doctors') {
-                content.innerHTML = `
-                    <h2 style="color:var(--accent); margin-bottom:25px;">👨‍⚕️ Top Specialists</h2>
-                    <div class="info-item"><img src="https://flaticon.com" width="50"><div><b>Dr. Ahsanul</b><p>AI Medical Lead</p></div></div>
-                    <div class="info-item"><img src="https://flaticon.com" width="50"><div><b>Dr. Elena</b><p>Senior Cardiologist</p></div></div>
-                    <div class="video-wrapper"><iframe src="https://youtube.com" allowfullscreen></iframe></div>`;
-            } else if (type === 'history') {
-                content.innerHTML = `
-                    <h2 style="color:var(--accent); margin-bottom:25px;">📅 Medical History</h2>
-                    <div class="info-item">✅ Blood Test: All Normal (March 2026)</div>
-                    <div class="info-item">✅ COVID Vaccine: Completed</div>
-                    <div class="video-wrapper"><iframe src="https://youtube.com" allowfullscreen></iframe></div>`;
-            } else if (type === 'community') {
-                content.innerHTML = `
-                    <h2 style="color:var(--accent); margin-bottom:20px;">👥 Patient Community</h2>
-                    <p style="color:#64748B;">Boshqa foydalanuvchilar bilan tajriba almashing.</p>
-                    <div style="margin-top:20px; height:200px; background:#f1f5f9; border-radius:15px; padding:20px;">
-                        <b>Ali:</b> O'zimni yaxshi his qilyapman!<br><b>Sora:</b> AI yordamchisi juda aqlli.
-                    </div>`;
-            } else if (type === 'account') {
-                content.innerHTML = `<h2>⚙️ Account Settings</h2><p>User: Ahsanul AI</p><p>ID: #778899</p><button style="margin-top:20px; padding:10px; border-radius:10px; border:none; background:var(--sos); color:white;">Logout</button>`;
+        // 1. ChatGPT Voice Mode Toggle
+        function toggleVoiceMode() {
+            isVoiceMode = !isVoiceMode;
+            const btn = document.getElementById('voice-toggle');
+            btn.classList.toggle('active');
+            if (isVoiceMode) {
+                speak("Voice mode activated. I'm listening.");
+                startSTT();
+            } else {
+                synth.cancel();
             }
         }
 
-        function closeModal() { document.getElementById('uiModal').style.display = 'none'; }
-
-        // 3. MIKROFON (Speech to Text)
-        function startSpeech() {
+        // 2. Speech to Text (Microphone)
+        function startSTT() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) { alert("Brauzeringizda mikrofon ishlamaydi."); return; }
-            
+            if (!SpeechRecognition) return;
             const rec = new SpeechRecognition();
             rec.lang = currentLang === 'uz' ? 'uz-UZ' : (currentLang === 'ru' ? 'ru-RU' : 'en-US');
-            
-            rec.onstart = () => { document.getElementById('mic-btn').classList.add('recording'); };
             rec.onresult = (e) => {
                 document.getElementById('user-input').value = e.results[0][0].transcript;
                 sendMessage();
             };
-            rec.onend = () => { document.getElementById('mic-btn').classList.remove('recording'); };
             rec.start();
         }
 
-        // 4. AI CHAT & VOICE (TTS)
+        // 3. New Pages (Doctors, History)
+        function openPage(type) {
+            const overlay = document.getElementById('pageOverlay');
+            const body = document.getElementById('pageBody');
+            overlay.style.display = 'flex';
+
+            if (type === 'doctors') {
+                body.innerHTML = `
+                    <h2 style="color:var(--accent); margin-bottom:30px;">👨‍⚕️ Medical Specialists</h2>
+                    <div class="info-card"><img src="https://flaticon.com" width="60"><div><b>Dr. Ahsanul AI</b><p>Chief Medical Scientist</p></div></div>
+                    <div class="info-card"><img src="https://flaticon.com" width="60"><div><b>Dr. Elena</b><p>Senior Cardiologist</p></div></div>
+                    <div class="video-box"><iframe src="https://youtube.com" allowfullscreen></iframe></div>`;
+            } else if (type === 'history') {
+                body.innerHTML = `
+                    <h2 style="color:var(--accent); margin-bottom:30px;">📅 Patient History</h2>
+                    <div class="info-card">✅ Latest Checkup: March 2026 - Excellent</div>
+                    <div class="info-card">✅ Blood Test: Normal stability</div>
+                    <div class="video-box"><iframe src="https://youtube.com" allowfullscreen></iframe></div>`;
+            } else {
+                body.innerHTML = `<h2>⚙️ Settings</h2><p>Language, Notifications, and AI Personality.</p>`;
+            }
+        }
+
+        function closePage() { document.getElementById('pageOverlay').style.display = 'none'; }
+
+        // 4. AI Interaction
         async function sendMessage() {
             const input = document.getElementById("user-input");
             const chatBox = document.getElementById("chat-box");
@@ -236,39 +213,43 @@
                 const res = await fetch('/chat', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({message: msg, lang: currentLang})
+                    body: JSON.stringify({message: msg})
                 });
                 const data = await res.json();
                 chatBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
                 
-                // OVOZLI CHIQARISH (AI Voice)
-                const speak = new SpeechSynthesisUtterance(data.reply);
-                speak.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'ru' ? 'ru-RU' : 'tr-TR');
-                synth.speak(speak);
+                if (isVoiceMode) speak(data.reply);
             } catch (e) {
-                chatBox.innerHTML += `<div class="msg bot">Error: AI brain is offline.</div>`;
+                chatBox.innerHTML += `<div class="msg bot">Connection error.</div>`;
             }
         }
 
-        // 5. GPS & SOS
-        function sendSOS() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    alert(`SOS SIGNAL SENT!\nLocation: Lat ${pos.coords.latitude}, Lon ${pos.coords.longitude}`);
-                });
-            } else { alert("SOS signal yuborildi!"); }
+        function speak(text) {
+            synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'ru' ? 'ru-RU' : 'tr-TR');
+            synth.speak(utterance);
         }
 
         function runAnalysis() {
-            const btn = document.getElementById('btn-anal');
-            const load = document.getElementById('load-box');
-            btn.style.display = 'none';
-            load.style.display = 'block';
-            setTimeout(() => {
-                load.innerText = currentLang === 'uz' ? "Tahlil natijasi: Sog'lig'ingiz 94% ajoyib!" : "Result: 94% Excellent!";
-                load.style.color = "#A7F3D0";
-            }, 3000);
+            const box = document.getElementById('load-box');
+            box.style.display = 'block';
+            setTimeout(() => { box.innerText = "94% Healthy - Keep it up!"; }, 3000);
+        }
+
+        function sendSOS() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((p) => {
+                    alert(`SOS! Lat: ${p.coords.latitude}, Lon: ${p.coords.longitude}`);
+                });
+            }
+        }
+
+        function changeLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-switch button').forEach(b => b.classList.remove('active'));
+            document.getElementById('b-' + lang).classList.add('active');
         }
     </script>
 </body>
