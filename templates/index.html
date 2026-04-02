@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ambulance AI | Ahsanul Dashboard</title>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
         :root { --accent: #4F46E5; --bg: #F0F4F8; --card: #FFFFFF; --text: #1E293B; --sos: #FF3B30; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -34,9 +34,13 @@
         /* AI Chat Section */
         .chat-section { display: flex; flex-direction: column; height: 400px; margin-top: 25px; }
         #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; padding-right: 5px; }
-        .msg { padding: 12px 18px; border-radius: 18px; font-size: 14px; max-width: 80%; line-height: 1.5; }
-        .bot { background: #F1F5F9; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .user { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-wrapper { display: flex; align-items: center; gap: 8px; max-width: 90%; }
+        .msg-wrapper.user-wrapper { align-self: flex-end; flex-direction: row-reverse; }
+        .msg { padding: 12px 18px; border-radius: 18px; font-size: 14px; line-height: 1.5; }
+        .bot { background: #F1F5F9; border-bottom-left-radius: 4px; }
+        .user { background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+        .voice-btn { cursor: pointer; border: none; background: #e2e8f0; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: 0.3s; }
+        .voice-btn:hover { background: #cbd5e1; }
 
         .input-group { display: flex; gap: 10px; background: #F8FAFC; padding: 8px; border-radius: 14px; border: 1px solid #E2E8F0; }
         input { flex: 1; border: none; background: transparent; padding: 10px; outline: none; }
@@ -92,7 +96,7 @@
                         <span id="ai-title">AI Yordamchi</span>
                     </h4>
                     <div id="chat-box">
-                        <div class="msg bot" id="bot-msg">Salom Ahsanul! Bugun o'zingizni qanday his qilyapsiz?</div>
+                        <!-- Xabarlar shu yerga tushadi -->
                     </div>
                     <div class="input-group">
                         <input type="text" id="user-input" placeholder="Savol yozing..." onkeypress="if(event.keyCode==13) sendMessage()">
@@ -123,12 +127,34 @@
     <script>
         let currentLang = 'uz';
 
+        // Xabarni chatga qo'shish (Voice tugmasi bilan)
+        function appendMessage(text, type) {
+            const chatBox = document.getElementById("chat-box");
+            const wrapper = document.createElement("div");
+            wrapper.className = `msg-wrapper ${type === 'user' ? 'user-wrapper' : ''}`;
+            
+            let voiceBtnHtml = type === 'bot' ? `<button class="voice-btn" onclick="speak('${text.replace(/'/g, "\\'")}')">🔊</button>` : '';
+            
+            wrapper.innerHTML = `
+                <div class="msg ${type}">${text}</div>
+                ${voiceBtnHtml}
+            `;
+            
+            chatBox.appendChild(wrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Boshlang'ich xabar
+        window.onload = () => {
+            appendMessage("Salom Ahsanul! Bugun o'zingizni qanday his qilyapsiz?", "bot");
+        };
+
         function setLanguage(lang) {
             currentLang = lang;
             const ui = {
-                uz: { welcome: "Xush kelibsiz, Ahsanul!", sub: "Sog'lig'ingiz tahlili", ph: "Savol yozing...", home: "Bosh sahifa", docs: "Shifokorlar", hist: "Tarix", bot: "Salom! Qanday yordam bera olaman?" },
-                en: { welcome: "Welcome, Ahsanul!", sub: "Health analysis & monitoring", ph: "Type your message...", home: "Home", docs: "Doctors", hist: "History", bot: "Hello! How can I help you today?" },
-                ru: { welcome: "Добро пожаловать!", sub: "Анализ и мониторинг", ph: "Напишите вопрос...", home: "Главная", docs: "Врачи", hist: "История", bot: "Привет! Чем я могу помочь?" }
+                uz: { welcome: "Xush kelibsiz, Ahsanul!", sub: "Sog'lig'ingiz tahlili", ph: "Savol yozing...", home: "Bosh sahifa", docs: "Shifokorlar", hist: "Tarix" },
+                en: { welcome: "Welcome, Ahsanul!", sub: "Health analysis & monitoring", ph: "Type your message...", home: "Home", docs: "Doctors", hist: "History" },
+                ru: { welcome: "Добро пожаловать!", sub: "Анализ здоровья", ph: "Напишите вопрос...", home: "Главная", docs: "Врачи", hist: "История" }
             };
             document.getElementById('welcome-text').innerText = ui[lang].welcome;
             document.getElementById('sub-text').innerText = ui[lang].sub;
@@ -136,15 +162,16 @@
             document.getElementById('nav-home').innerText = ui[lang].home;
             document.getElementById('nav-docs').innerText = ui[lang].docs;
             document.getElementById('nav-history').innerText = ui[lang].hist;
-            document.getElementById('bot-msg').innerText = ui[lang].bot;
         }
 
         function showInfo(type) {
-            const chatBox = document.getElementById("chat-box");
-            let info = type === 'doctors' ? (currentLang === 'uz' ? "Navbatchi shifokor: Dr. Alisher (Kardiolog)." : "Doctor on duty: Dr. Alisher (Cardiologist).") : (currentLang === 'uz' ? "Oxirgi ko'rik: 15-mart. Natijalar ijobiy." : "Last checkup: March 15. Vitals are stable.");
-            chatBox.innerHTML += `<div class="msg bot">${info}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-            speak(info);
+            let info = "";
+            if(type === 'doctors') {
+                info = currentLang === 'uz' ? "Hozirda 3 ta shifokor onlayn: Kardiolog, Terapevt va Nevrolog." : (currentLang === 'ru' ? "Сейчас онлайн 3 врача: Кардиолог, Терапевт и Невролог." : "3 doctors are currently online: Cardiologist, Physician, and Neurologist.");
+            } else {
+                info = currentLang === 'uz' ? "Sizning oxirgi tibbiy tarixingiz: 12-fevral kuni qon tahlili o'tkazilgan." : (currentLang === 'ru' ? "Ваша последняя история: анализ крови от 12 февраля." : "Your last history: Blood test on February 12.");
+            }
+            appendMessage(info, "bot");
         }
 
         function startAnalysis() {
@@ -153,30 +180,27 @@
             btn.style.display = 'none';
             loading.style.display = 'block';
             setTimeout(() => {
-                let result = currentLang === 'uz' ? "Tahlil tayyor: Ahsanul, sog'lig'ingiz 94% ajoyib!" : "Analysis ready: Ahsanul, your health is 94% excellent!";
+                let result = currentLang === 'uz' ? "Tahlil tayyor: Ahsanul, sog'lig'ingiz 94% ajoyib! Ko'proq dam oling." : "Analysis ready: Ahsanul, your health is 94% excellent! Take more rest.";
                 loading.innerText = result;
                 loading.style.color = "#A7F3D0";
-                speak(result);
+                appendMessage(result, "bot");
             }, 3000);
         }
 
         function triggerSOS() {
-            const chatBox = document.getElementById("chat-box");
             alert(currentLang === 'en' ? "⚠️ SOS SENT!" : "⚠️ SOS YUBORILDI!");
-            let sos = currentLang === 'en' ? "Help is on the way!" : "Yordam yo'lda!";
-            chatBox.innerHTML += `<div class="msg bot" style="background:#FEE2E2;"><b>SOS:</b> ${sos}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-            speak(sos);
+            let sos = currentLang === 'en' ? "Emergency signal received! Help is on the way." : "Favqulodda signal qabul qilindi! Yordam yo'lda.";
+            appendMessage(sos, "bot");
         }
 
         async function sendMessage() {
             const input = document.getElementById("user-input");
-            const chatBox = document.getElementById("chat-box");
             const msg = input.value.trim();
             if(!msg) return;
-            chatBox.innerHTML += `<div class="msg user">${msg}</div>`;
+
+            appendMessage(msg, "user");
             input.value = "";
-            chatBox.scrollTop = chatBox.scrollHeight;
+
             try {
                 const res = await fetch('/chat', {
                     method: 'POST',
@@ -184,17 +208,18 @@
                     body: JSON.stringify({message: msg})
                 });
                 const data = await res.json();
-                chatBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-                speak(data.reply);
+                appendMessage(data.reply, "bot");
             } catch (e) {
-                chatBox.innerHTML += `<div class="msg bot">Error: Offline</div>`;
+                appendMessage("Error: Server offline", "bot");
             }
         }
 
         function speak(text) {
+            window.speechSynthesis.cancel(); // Avvalgi ovozni to'xtatish
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'ru' ? 'ru-RU' : 'tr-TR');
+            if(currentLang === 'en') utterance.lang = 'en-US';
+            else if(currentLang === 'ru') utterance.lang = 'ru-RU';
+            else utterance.lang = 'tr-TR'; 
             window.speechSynthesis.speak(utterance);
         }
     </script>
