@@ -3,253 +3,419 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ambulance AI | Medical Intelligence</title>
+    <title>Ambulance AI | Advanced Healthcare Dashboard</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        :root { --accent: #4F46E5; --bg: #F0F4F8; --card: #FFFFFF; --text: #1E293B; --sos: #FF3B30; --success: #10B981; }
+        /* 1. ASOSIY STILLAR VA O'ZGARUVCHILAR */
+        :root { 
+            --accent: #4F46E5; 
+            --bg: #F0F4F8; 
+            --card: #FFFFFF; 
+            --text: #1E293B; 
+            --sos: #FF3B30; 
+            --success: #10B981; 
+            --sidebar-w: 280px;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+            transition: background 0.5s ease, color 0.5s ease;
+        }
 
-        /* Sidebar Styling */
-        .sidebar { width: 280px; background: var(--card); border-right: 1px solid #E2E8F0; padding: 30px; display: flex; flex-direction: column; }
-        .logo { font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
-        .nav-link { padding: 14px 18px; border-radius: 14px; color: #64748B; cursor: pointer; margin-bottom: 10px; transition: 0.3s; font-weight: 600; display: flex; align-items: center; gap: 12px; }
+        /* 2. SIDEBAR - YIG'ILADIGAN (COLLAPSIBLE) */
+        .sidebar { 
+            width: var(--sidebar-w); 
+            background: var(--card); 
+            border-right: 1px solid #E2E8F0; 
+            padding: 30px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .sidebar.collapsed { 
+            width: 85px; 
+            padding: 30px 15px; 
+        }
+
+        .sidebar.collapsed .logo span, 
+        .sidebar.collapsed .nav-link span, 
+        .sidebar.collapsed .sos-btn span { 
+            display: none; 
+        }
+
+        .toggle-sidebar {
+            position: absolute;
+            right: -12px;
+            top: 45px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo { font-size: 22px; font-weight: 800; color: var(--accent); margin-bottom: 40px; white-space: nowrap; overflow: hidden; }
+
+        .nav-link { 
+            padding: 14px 18px; 
+            border-radius: 14px; 
+            color: #64748B; 
+            cursor: pointer; 
+            margin-bottom: 8px; 
+            transition: 0.3s; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            white-space: nowrap; 
+            font-weight: 600;
+        }
         .nav-link:hover, .nav-link.active { background: #EEF2FF; color: var(--accent); }
-        .sos-btn { margin-top: auto; background: var(--sos); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(255, 59, 48, 0.3); animation: pulse 2s infinite; }
 
-        /* Main Content Area */
-        .main { flex: 1; padding: 40px; overflow-y: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
-        .user-info h1 { font-size: 30px; font-weight: 800; }
+        .sos-btn { 
+            margin-top: auto; 
+            background: var(--sos); 
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            border-radius: 18px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(255, 59, 48, 0.3);
+            animation: pulse 2s infinite;
+        }
 
-        /* Dashboard Grid */
+        /* 3. ASOSIY MAZMUN (MAIN CONTENT) */
+        .main { flex: 1; padding: 35px; overflow-y: auto; transition: 0.3s; width: 100%; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; flex-wrap: wrap; gap: 20px; }
+
+        /* DASHBOARD GRID */
         .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-        .card { background: var(--card); border-radius: 28px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; }
 
-        /* Analysis Card */
+        /* KARTALAR (CARDS) */
+        .card { background: var(--card); border-radius: 28px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; transition: 0.3s; }
         .analysis-card { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white; border: none; }
-        .analysis-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 12px 25px; border-radius: 14px; cursor: pointer; font-weight: 600; margin-top: 20px; transition: 0.3s; }
-        .analysis-btn:hover { background: white; color: var(--accent); }
+        .analysis-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 12px 25px; border-radius: 14px; cursor: pointer; font-weight: 600; margin-top: 15px; }
 
-        /* AI Chat Section - ChatGPT Style */
-        .chat-section { display: flex; flex-direction: column; height: 450px; margin-top: 30px; }
-        #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; padding-right: 10px; }
+        /* AI CHAT - CHATGPT STYLE */
+        .chat-section { display: flex; flex-direction: column; height: 480px; margin-top: 30px; }
+        #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; }
         .msg { padding: 14px 20px; border-radius: 20px; font-size: 14px; max-width: 85%; line-height: 1.6; }
-        .bot { background: #F1F5F9; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .bot { background: #F1F5F9; align-self: flex-start; border-bottom-left-radius: 4px; color: #1E293B; }
         .user { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
 
-        /* ChatGPT Input Group with Mic and Black Voice Button */
-        .input-group { display: flex; gap: 12px; background: #F8FAFC; padding: 8px 15px; border-radius: 30px; border: 1px solid #E2E8F0; align-items: center; }
-        input { flex: 1; border: none; background: transparent; padding: 10px; outline: none; font-size: 15px; }
-        .mic-btn { background: none; border: none; cursor: pointer; color: #64748B; font-size: 20px; }
-        .voice-mode-btn { background: #000; color: white; width: 42px; height: 42px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .voice-mode-btn.active { background: var(--success); box-shadow: 0 0 15px var(--success); }
+        /* CHAT INPUT GROUP */
+        .input-group { display: flex; gap: 12px; background: #F8FAFC; padding: 10px 20px; border-radius: 35px; border: 1px solid #E2E8F0; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        input { flex: 1; border: none; background: transparent; padding: 10px; outline: none; font-size: 15px; color: var(--text); }
+        
+        .chat-btn { background: none; border: none; cursor: pointer; color: #64748B; font-size: 22px; transition: 0.2s; }
+        .voice-mode-btn { 
+            background: #000; 
+            color: white; 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .voice-mode-btn.active { background: var(--success); box-shadow: 0 0 20px var(--success); }
 
-        /* New Page / Modal Styling */
-        .page-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .page-content { background: white; width: 90%; max-width: 700px; padding: 40px; border-radius: 35px; position: relative; max-height: 85vh; overflow-y: auto; }
-        .close-page { position: absolute; right: 30px; top: 30px; font-size: 28px; cursor: pointer; border: none; background: none; color: #94A3B8; }
-        .info-card { display: flex; gap: 20px; background: #F8FAFC; padding: 20px; border-radius: 20px; margin-bottom: 20px; align-items: center; border: 1px solid #E2E8F0; }
-        .video-box { border-radius: 25px; overflow: hidden; margin-top: 25px; background: #000; position: relative; padding-bottom: 56.25%; height: 0; }
-        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        /* 4. OVERLAY PAGE SYSTEM (NEW PAGES) */
+        .overlay-page { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: var(--bg); 
+            z-index: 2500; 
+            padding: 50px; 
+            overflow-y: auto; 
+            animation: slideUp 0.4s cubic-bezier(0, 0, 0.2, 1); 
+        }
+        .close-page { 
+            position: fixed; 
+            top: 30px; 
+            right: 30px; 
+            font-size: 30px; 
+            cursor: pointer; 
+            background: white; 
+            border-radius: 50%; 
+            width: 55px; 
+            height: 55px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            z-index: 2600;
+        }
 
-        /* Vitals */
-        .vital-value { font-size: 42px; font-weight: 800; color: var(--sos); margin: 15px 0; }
-        .lang-switch { display: flex; gap: 8px; margin-bottom: 15px; }
-        .lang-switch button { cursor: pointer; background: white; border: 1px solid #E2E8F0; padding: 6px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; transition: 0.3s; }
-        .lang-switch button.active { background: var(--accent); color: white; }
+        .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 40px; }
+        iframe { width: 100%; aspect-ratio: 16/9; border-radius: 25px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
 
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; height: 100%; left: -280px; box-shadow: 20px 0 50px rgba(0,0,0,0.1); }
+            .sidebar.mobile-open { left: 0; }
+            .mobile-menu-trigger { display: block !important; }
+        }
+
+        .lang-btn { padding: 10px 20px; border-radius: 12px; border: 1px solid #E2E8F0; background: white; cursor: pointer; font-weight: 700; transition: 0.3s; }
+        .lang-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .loading { display: none; margin-top: 15px; font-weight: 700; color: #A7F3D0; }
     </style>
 </head>
-<body>
+<body id="main-body">
 
-    <aside class="sidebar">
-        <div class="logo">🚑 AI Ambulance</div>
-        <div class="nav-link active" onclick="location.reload()">🏠 <span id="l-home">Home</span></div>
-        <div class="nav-link" onclick="openPage('doctors')">👨‍⚕️ <span id="l-docs">Doctors</span></div>
-        <div class="nav-link" onclick="openPage('history')">📅 <span id="l-hist">History</span></div>
-        <div class="nav-link" onclick="openPage('settings')">⚙️ <span id="l-sett">Settings</span></div>
-        <button class="sos-btn" onclick="sendSOS()">SOS EMERGENCY</button>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="app-sidebar">
+        <button class="toggle-sidebar" onclick="toggleSidebar()">⟨</button>
+        <div class="logo">🚑 <span>AI Ambulance</span></div>
+        
+        <nav style="flex: 1;">
+            <div class="nav-link active" onclick="location.reload()">🏠 <span>Home Dashboard</span></div>
+            <div class="nav-link" onclick="openFullPage('doctors')">👨‍⚕️ <span>Medical Team</span></div>
+            <div class="nav-link" onclick="openFullPage('history')">📅 <span>Patient History</span></div>
+            <div class="nav-link" onclick="openFullPage('settings')">⚙️ <span>System Settings</span></div>
+        </nav>
+
+        <button class="sos-btn" onclick="triggerEmergency()">🆘 <span>SOS EMERGENCY</span></button>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main class="main">
         <header class="header">
             <div class="user-info">
-                <div class="lang-switch">
-                    <button id="b-uz" class="active" onclick="changeLang('uz')">UZ</button>
-                    <button id="b-en" onclick="changeLang('en')">EN</button>
-                    <button id="b-ru" onclick="changeLang('ru')">RU</button>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="lang-btn active" id="uz-btn" onclick="updateLanguage('uz')">UZ</button>
+                    <button class="lang-btn" id="en-btn" onclick="updateLanguage('en')">EN</button>
+                    <button class="lang-btn" id="ru-btn" onclick="updateLanguage('ru')">RU</button>
                 </div>
-                <h1 id="txt-welcome">Medical Dashboard</h1>
-                <p id="txt-sub" style="color: #64748B;">AI-Powered Health Monitoring</p>
+                <h1 id="header-title">Xush kelibsiz, Ahsanul!</h1>
+                <p id="header-desc" style="color: #64748B;">Sog'liqni monitoring qilish tizimi faol</p>
             </div>
-            <div style="font-weight: 700; color: var(--success);">● SERVER ONLINE</div>
+            <button class="lang-btn mobile-menu-trigger" style="display: none;" onclick="toggleMobileMenu()">☰ Menu</button>
         </header>
 
         <div class="dashboard-grid">
-            <div class="left">
+            <!-- LEFT COLUMN -->
+            <div class="left-col">
                 <div class="card analysis-card">
-                    <h3>📊 AI Health Insights</h3>
-                    <p style="margin-top: 12px; opacity: 0.9;">Analyze your latest data using neural networks.</p>
-                    <button class="analysis-btn" onclick="runAnalysis()">Start Analysis</button>
-                    <div id="load-box" class="loading">Processing Data...</div>
+                    <h2 id="anal-h">📊 Smart Health Analysis</h2>
+                    <p id="anal-p" style="margin-top: 15px; opacity: 0.9;">Sun'iy intellekt yordamida ko'rsatkichlaringizni tahlil qiling.</p>
+                    <button class="analysis-btn" onclick="simulateAnalysis()">Tahlilni boshlash</button>
                 </div>
 
                 <div class="card chat-section">
-                    <h4 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                        <img src="https://flaticon.com" width="30">
-                        <span>AI Assistant</span>
-                    </h4>
                     <div id="chat-box">
-                        <div class="msg bot">System ready. How can I assist you today?</div>
+                        <div class="msg bot">Assalomu alaykum! Men sizning aqlli tibbiy yordamchingizman. Savolingiz bormi?</div>
                     </div>
                     <div class="input-group">
-                        <button class="mic-btn" onclick="startSTT()">🎤</button>
-                        <input type="text" id="user-input" placeholder="Type a message..." onkeypress="if(event.keyCode==13) sendMessage()">
-                        <button class="voice-mode-btn" id="voice-toggle" onclick="toggleVoiceMode()">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 3v18M8 7v10M4 10v4M16 7v10M20 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round""")/>></svg>
-                        </button>
+                        <button class="chat-btn" onclick="voiceToText()">🎤</button>
+                        <input type="text" id="user-input" placeholder="Xabar yozing..." onkeypress="if(event.keyCode==13) processChat()">
+                        <button class="voice-mode-btn" id="voice-toggle" onclick="toggleVoiceAI()">●</button>
                     </div>
                 </div>
             </div>
 
-            <div class="right">
-                <div class="card vital-card">
-                    <p style="color: #64748B; font-weight: 600;">Pulse Rate</p>
-                    <div class="vital-value">76 <span style="font-size: 18px; color: #94A3B8;">BPM</span></div>
-                    <p style="color: var(--success); font-weight: 700;">✓ NORMAL</p>
+            <!-- RIGHT COLUMN -->
+            <div class="right-col">
+                <div class="card" style="text-align: center;">
+                    <p style="color: #64748B; font-weight: 600;">Yurak urishi (Pulse)</p>
+                    <div style="font-size: 45px; font-weight: 800; color: var(--sos); margin: 15px 0;">76 <small style="font-size: 18px; color: #94A3B8;">BPM</small></div>
+                    <div style="background: #DCFCE7; color: #166534; padding: 8px; border-radius: 12px; display: inline-block; font-weight: 700; font-size: 13px;">✓ NORMAL</div>
                 </div>
-                <div class="card vital-card" style="border-left: 6px solid #3B82F6;">
-                    <p style="color: #64748B; font-weight: 600;">Blood Pressure</p>
-                    <div class="vital-value" style="color: #3B82F6;">120/80</div>
-                    <p style="font-size: 13px; opacity: 0.7;">Measured: 2 hours ago</p>
+
+                <div class="card" style="margin-top: 30px; border-left: 6px solid #3B82F6;">
+                    <p style="color: #64748B; font-weight: 600;">Qon bosimi</p>
+                    <div style="font-size: 35px; font-weight: 800; color: #3B82F6; margin: 10px 0;">120/80</div>
+                    <p style="font-size: 13px; color: #94A3B8;">Oxirgi o'lchov: 2 soat oldin</p>
                 </div>
-                <div class="card">
-                    <h4>Quick Access</h4>
-                    <button onclick="window.location.href='tel:103'" style="width:100%; padding:15px; margin-top:20px; border-radius:18px; border:none; background:#F1F5F9; cursor:pointer; font-weight:700;">📞 CALL AMBULANCE (103)</button>
+
+                <div class="card" style="margin-top: 30px; background: #F8FAFC;">
+                    <h4 id="call-h">Tezkor aloqa</h4>
+                    <button onclick="window.location.href='tel:103'" style="width: 100%; padding: 18px; margin-top: 20px; border-radius: 20px; border: none; background: var(--accent); color: white; font-weight: 800; cursor: pointer;">📞 CALL AMBULANCE (103)</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Full Screen Page Overlay -->
-    <div id="pageOverlay" class="page-overlay" onclick="closePage()">
-        <div class="page-content" onclick="event.stopPropagation()">
-            <button class="close-page" onclick="closePage()">&times;</button>
-            <div id="pageBody"></div>
-        </div>
+    <!-- FULL SCREEN PAGES -->
+    <div id="fullPageOverlay" class="overlay-page">
+        <span class="close-page" onclick="closeFullPage()">×</span>
+        <div id="pageDynamicContent"></div>
     </div>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        let currentLang = 'en';
-        let isVoiceMode = false;
-        const synth = window.speechSynthesis;
+        let appLang = 'uz';
+        let voiceModeActive = false;
+        const voiceSynth = window.speechSynthesis;
 
-        // 1. ChatGPT Voice Mode Toggle
-        function toggleVoiceMode() {
-            isVoiceMode = !isVoiceMode;
-            const btn = document.getElementById('voice-toggle');
-            btn.classList.toggle('active');
-            if (isVoiceMode) {
-                speak("Voice mode activated. I'm listening.");
-                startSTT();
-            } else {
-                synth.cancel();
-            }
-        }
-
-        // 2. Speech to Text (Microphone)
-        function startSTT() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return;
-            const rec = new SpeechRecognition();
-            rec.lang = currentLang === 'uz' ? 'uz-UZ' : (currentLang === 'ru' ? 'ru-RU' : 'en-US');
-            rec.onresult = (e) => {
-                document.getElementById('user-input').value = e.results[0][0].transcript;
-                sendMessage();
+        // 1. TILLARNI BOSHQARISH
+        function updateLanguage(lang) {
+            appLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(lang + '-btn').classList.add('active');
+            
+            const dictionary = {
+                uz: { welcome: "Xush kelibsiz, Ahsanul!", desc: "Tizim faol holatda", anal: "Smart Health Tahlil", call: "Tezkor aloqa" },
+                en: { welcome: "Welcome, Ahsanul!", desc: "AI System is Online", anal: "Smart Health Analysis", call: "Quick Support" },
+                ru: { welcome: "Добро пожаловать!", desc: "Система активна", anal: "Анализ здоровья", call: "Срочный вызов" }
             };
-            rec.start();
+            
+            document.getElementById('header-title').innerText = dictionary[lang].welcome;
+            document.getElementById('header-desc').innerText = dictionary[lang].desc;
+            document.getElementById('anal-h').innerText = dictionary[lang].anal;
+            document.getElementById('call-h').innerText = dictionary[lang].call;
         }
 
-        // 3. New Pages (Doctors, History)
-        function openPage(type) {
-            const overlay = document.getElementById('pageOverlay');
-            const body = document.getElementById('pageBody');
-            overlay.style.display = 'flex';
+        // 2. SIDEBAR TOGGLE (NOTEBOOK UCHUN)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('app-sidebar');
+            const btn = document.querySelector('.toggle-sidebar');
+            sidebar.classList.toggle('collapsed');
+            btn.innerText = sidebar.classList.contains('collapsed') ? '⟩' : '⟨';
+        }
 
-            if (type === 'doctors') {
-                body.innerHTML = `
-                    <h2 style="color:var(--accent); margin-bottom:30px;">👨‍⚕️ Medical Specialists</h2>
-                    <div class="info-card"><img src="https://flaticon.com" width="60"><div><b>Dr. Ahsanul AI</b><p>Chief Medical Scientist</p></div></div>
-                    <div class="info-card"><img src="https://flaticon.com" width="60"><div><b>Dr. Elena</b><p>Senior Cardiologist</p></div></div>
-                    <div class="video-box"><iframe src="https://youtube.com" allowfullscreen></iframe></div>`;
-            } else if (type === 'history') {
-                body.innerHTML = `
-                    <h2 style="color:var(--accent); margin-bottom:30px;">📅 Patient History</h2>
-                    <div class="info-card">✅ Latest Checkup: March 2026 - Excellent</div>
-                    <div class="info-card">✅ Blood Test: Normal stability</div>
-                    <div class="video-box"><iframe src="https://youtube.com" allowfullscreen></iframe></div>`;
-            } else {
-                body.innerHTML = `<h2>⚙️ Settings</h2><p>Language, Notifications, and AI Personality.</p>`;
+        function toggleMobileMenu() {
+            document.getElementById('app-sidebar').classList.toggle('mobile-open');
+        }
+
+        // 3. YANGI SAHIFALAR (DOCTORS, HISTORY, SETTINGS)
+        function openFullPage(type) {
+            const overlay = document.getElementById('fullPageOverlay');
+            const content = document.getElementById('pageDynamicContent');
+            overlay.style.display = 'block';
+
+            if(type === 'doctors') {
+                content.innerHTML = `
+                    <h1 style="font-size: 45px; color: var(--accent); font-weight: 800;">👨‍⚕️ Qualified Medical Team</h1>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
+                        <div class="card"><h3>Dr. Ahsanul AI</h3><p>Chief Medical Intelligence Scientist</p></div>
+                        <div class="card"><h3>Dr. Elena Petrova</h3><p>Senior Cardiologist & Surgeon</p></div>
+                        <div class="card"><h3>Dr. James Wilson</h3><p>Emergency Response Specialist</p></div>
+                    </div>
+                    <div class="video-grid">
+                        <iframe src="https://youtube.com"></iframe>
+                        <iframe src="https://youtube.com"></iframe>
+                    </div>
+                `;
+            } else if(type === 'settings') {
+                content.innerHTML = `
+                    <h1 style="font-size: 45px; font-weight: 800;">⚙️ System Customization</h1>
+                    <div class="card" style="margin-top: 40px; max-width: 600px;">
+                        <h3>Change Dashboard Background</h3>
+                        <div style="display: flex; gap: 15px; margin-top: 25px;">
+                            <button class="lang-btn" onclick="changeTheme('#ffffff', '#1e293b')">Pure White</button>
+                            <button class="lang-btn" onclick="changeTheme('#1a1a1a', '#ffffff')">Deep Dark</button>
+                            <button class="lang-btn" onclick="changeTheme('#f0f4f8', '#1e293b')">Classic Blue</button>
+                        </div>
+                    </div>
+                `;
+            } else if(type === 'history') {
+                content.innerHTML = `
+                    <h1 style="font-size: 45px; font-weight: 800;">📅 Medical Timeline</h1>
+                    <div style="margin-top: 40px;">
+                        <div class="card" style="margin-bottom: 20px;"><b>2026-03-28:</b> Qon tahlili natijalari (Hammasi joyida)</div>
+                        <div class="card" style="margin-bottom: 20px;"><b>2026-02-15:</b> Umumiy tibbiy ko'rikdan o'tish</div>
+                    </div>
+                `;
             }
         }
 
-        function closePage() { document.getElementById('pageOverlay').style.display = 'none'; }
+        function closeFullPage() { document.getElementById('fullPageOverlay').style.display = 'none'; }
 
-        // 4. AI Interaction
-        async function sendMessage() {
-            const input = document.getElementById("user-input");
-            const chatBox = document.getElementById("chat-box");
-            const msg = input.value.trim();
-            if(!msg) return;
+        function changeTheme(bg, text) {
+            document.getElementById('main-body').style.background = bg;
+            document.getElementById('main-body').style.color = text;
+        }
 
-            chatBox.innerHTML += `<div class="msg user">${msg}</div>`;
+        // 4. AI CHAT VA OVOZ (CHATGPT STYLE)
+        async function processChat() {
+            const input = document.getElementById('user-input');
+            const chatBox = document.getElementById('chat-box');
+            if(!input.value.trim()) return;
+
+            const userMsg = input.value;
+            chatBox.innerHTML += `<div class="msg user">${userMsg}</div>`;
             input.value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
-                const res = await fetch('/chat', {
+                const response = await fetch('/chat', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({message: msg})
+                    body: JSON.stringify({message: userMsg})
                 });
-                const data = await res.json();
+                const data = await response.json();
                 chatBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
                 
-                if (isVoiceMode) speak(data.reply);
-            } catch (e) {
-                chatBox.innerHTML += `<div class="msg bot">Connection error.</div>`;
-            }
+                if(voiceModeActive) speakText(data.reply);
+            } catch(e) { chatBox.innerHTML += `<div class="msg bot">Server bilan bog'lanishda xatolik!</div>`; }
         }
 
-        function speak(text) {
-            synth.cancel();
+        function toggleVoiceAI() {
+            voiceModeActive = !voiceModeActive;
+            document.getElementById('voice-toggle').classList.toggle('active');
+            if(voiceModeActive) speakText("Ovozli rejim faollashdi.");
+        }
+
+        function speakText(text) {
+            voiceSynth.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'ru' ? 'ru-RU' : 'tr-TR');
-            synth.speak(utterance);
+            utterance.lang = appLang === 'en' ? 'en-US' : (appLang === 'ru' ? 'ru-RU' : 'tr-TR');
+            voiceSynth.speak(utterance);
         }
 
-        function runAnalysis() {
-            const box = document.getElementById('load-box');
-            box.style.display = 'block';
-            setTimeout(() => { box.innerText = "94% Healthy - Keep it up!"; }, 3000);
+        function voiceToText() {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!SpeechRec) { alert("Brauzer mikrofoni qo'llab-quvvatlanmaydi."); return; }
+            const rec = new SpeechRec();
+            rec.lang = appLang === 'uz' ? 'uz-UZ' : (appLang === 'ru' ? 'ru-RU' : 'en-US');
+            rec.onresult = (e) => { 
+                document.getElementById('user-input').value = e.results[0][0].transcript; 
+                processChat();
+            };
+            rec.start();
         }
 
-        function sendSOS() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((p) => {
-                    alert(`SOS! Lat: ${p.coords.latitude}, Lon: ${p.coords.longitude}`);
-                });
-            }
+        function triggerEmergency() {
+            navigator.geolocation.getCurrentPosition(p => {
+                alert(`⚠️ SOS SIGNAL YUBORILDI!\nSizning joylashuvingiz: Lat ${p.coords.latitude}, Lon ${p.coords.longitude}`);
+            }, () => alert("SOS signal yuborildi!"));
         }
 
-        function changeLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('.lang-switch button').forEach(b => b.classList.remove('active'));
-            document.getElementById('b-' + lang).classList.add('active');
+        function simulateAnalysis() {
+            alert("Sun'iy intellekt tahlili boshlandi. Kuting...");
+            setTimeout(() => alert("Tahlil natijasi: Sizning sog'lig'ingiz 94% ijobiy!"), 2000);
         }
     </script>
 </body>
