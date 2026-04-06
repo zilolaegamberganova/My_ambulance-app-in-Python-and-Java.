@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ambulance AI | Advanced Healthcare Dashboard</title>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* 1. ASOSIY STILLAR VA O'ZGARUVCHILAR */
         :root { 
             --accent: #4F46E5; 
             --bg: #F0F4F8; 
@@ -14,7 +13,12 @@
             --text: #1E293B; 
             --sos: #FF3B30; 
             --success: #10B981; 
+            --warning: #F59E0B;
+            --danger: #EF4444;
             --sidebar-w: 280px;
+            --muted: #64748B;
+            --border: #E2E8F0;
+            --soft: #EEF2FF;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -28,11 +32,10 @@
             transition: background 0.5s ease, color 0.5s ease;
         }
 
-        /* 2. SIDEBAR - YIG'ILADIGAN (COLLAPSIBLE) */
         .sidebar { 
             width: var(--sidebar-w); 
             background: var(--card); 
-            border-right: 1px solid #E2E8F0; 
+            border-right: 1px solid var(--border); 
             padding: 30px; 
             display: flex; 
             flex-direction: column; 
@@ -70,12 +73,19 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .logo { font-size: 22px; font-weight: 800; color: var(--accent); margin-bottom: 40px; white-space: nowrap; overflow: hidden; }
+        .logo { 
+            font-size: 22px; 
+            font-weight: 800; 
+            color: var(--accent); 
+            margin-bottom: 40px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+        }
 
         .nav-link { 
             padding: 14px 18px; 
             border-radius: 14px; 
-            color: #64748B; 
+            color: var(--muted); 
             cursor: pointer; 
             margin-bottom: 8px; 
             transition: 0.3s; 
@@ -85,7 +95,11 @@
             white-space: nowrap; 
             font-weight: 600;
         }
-        .nav-link:hover, .nav-link.active { background: #EEF2FF; color: var(--accent); }
+
+        .nav-link:hover, .nav-link.active { 
+            background: var(--soft); 
+            color: var(--accent); 
+        }
 
         .sos-btn { 
             margin-top: auto; 
@@ -103,30 +117,124 @@
             animation: pulse 2s infinite;
         }
 
-        /* 3. ASOSIY MAZMUN (MAIN CONTENT) */
-        .main { flex: 1; padding: 35px; overflow-y: auto; transition: 0.3s; width: 100%; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; flex-wrap: wrap; gap: 20px; }
+        .main { 
+            flex: 1; 
+            padding: 35px; 
+            overflow-y: auto; 
+            transition: 0.3s; 
+            width: 100%; 
+        }
 
-        /* DASHBOARD GRID */
-        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 35px; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+        }
 
-        /* KARTALAR (CARDS) */
-        .card { background: var(--card); border-radius: 28px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #E2E8F0; transition: 0.3s; }
-        .analysis-card { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white; border: none; }
-        .analysis-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 12px 25px; border-radius: 14px; cursor: pointer; font-weight: 600; margin-top: 15px; }
+        .dashboard-grid { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            gap: 30px; 
+        }
 
-        /* AI CHAT - CHATGPT STYLE */
-        .chat-section { display: flex; flex-direction: column; height: 480px; margin-top: 30px; }
-        #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; }
-        .msg { padding: 14px 20px; border-radius: 20px; font-size: 14px; max-width: 85%; line-height: 1.6; }
-        .bot { background: #F1F5F9; align-self: flex-start; border-bottom-left-radius: 4px; color: #1E293B; }
-        .user { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .card { 
+            background: var(--card); 
+            border-radius: 28px; 
+            padding: 30px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); 
+            border: 1px solid var(--border); 
+            transition: 0.3s; 
+        }
 
-        /* CHAT INPUT GROUP */
-        .input-group { display: flex; gap: 12px; background: #F8FAFC; padding: 10px 20px; border-radius: 35px; border: 1px solid #E2E8F0; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-        input { flex: 1; border: none; background: transparent; padding: 10px; outline: none; font-size: 15px; color: var(--text); }
+        .analysis-card { 
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); 
+            color: white; 
+            border: none; 
+        }
+
+        .analysis-btn { 
+            background: rgba(255,255,255,0.2); 
+            border: 1px solid rgba(255,255,255,0.4); 
+            color: white; 
+            padding: 12px 25px; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            margin-top: 15px; 
+        }
+
+        .chat-section { 
+            display: flex; 
+            flex-direction: column; 
+            height: 480px; 
+            margin-top: 30px; 
+        }
+
+        #chat-box { 
+            flex: 1; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            padding-bottom: 20px; 
+        }
+
+        .msg { 
+            padding: 14px 20px; 
+            border-radius: 20px; 
+            font-size: 14px; 
+            max-width: 85%; 
+            line-height: 1.6; 
+            white-space: pre-wrap;
+        }
+
+        .bot { 
+            background: #F1F5F9; 
+            align-self: flex-start; 
+            border-bottom-left-radius: 4px; 
+            color: var(--text); 
+        }
+
+        .user { 
+            background: var(--accent); 
+            color: white; 
+            align-self: flex-end; 
+            border-bottom-right-radius: 4px; 
+        }
+
+        .input-group { 
+            display: flex; 
+            gap: 12px; 
+            background: #F8FAFC; 
+            padding: 10px 20px; 
+            border-radius: 35px; 
+            border: 1px solid var(--border); 
+            align-items: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+        }
+
+        input { 
+            flex: 1; 
+            border: none; 
+            background: transparent; 
+            padding: 10px; 
+            outline: none; 
+            font-size: 15px; 
+            color: var(--text); 
+        }
         
-        .chat-btn { background: none; border: none; cursor: pointer; color: #64748B; font-size: 22px; transition: 0.2s; }
+        .chat-btn { 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            color: var(--muted); 
+            font-size: 22px; 
+            transition: 0.2s; 
+        }
+
         .voice-mode-btn { 
             background: #000; 
             color: white; 
@@ -140,9 +248,12 @@
             border: none;
             cursor: pointer;
         }
-        .voice-mode-btn.active { background: var(--success); box-shadow: 0 0 20px var(--success); }
 
-        /* 4. OVERLAY PAGE SYSTEM (NEW PAGES) */
+        .voice-mode-btn.active { 
+            background: var(--success); 
+            box-shadow: 0 0 20px var(--success); 
+        }
+
         .overlay-page { 
             display: none; 
             position: fixed; 
@@ -156,6 +267,7 @@
             overflow-y: auto; 
             animation: slideUp 0.4s cubic-bezier(0, 0, 0.2, 1); 
         }
+
         .close-page { 
             position: fixed; 
             top: 30px; 
@@ -173,27 +285,186 @@
             z-index: 2600;
         }
 
-        .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 40px; }
-        iframe { width: 100%; aspect-ratio: 16/9; border-radius: 25px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .video-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 25px; 
+            margin-top: 40px; 
+        }
 
-        /* MOBILE RESPONSIVE */
+        iframe { 
+            width: 100%; 
+            aspect-ratio: 16/9; 
+            border-radius: 25px; 
+            border: none; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+        }
+
+        .lang-btn { 
+            padding: 10px 20px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+            background: white; 
+            cursor: pointer; 
+            font-weight: 700; 
+            transition: 0.3s; 
+        }
+
+        .lang-btn.active { 
+            background: var(--accent); 
+            color: white; 
+            border-color: var(--accent); 
+        }
+
+        .mini-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .mini-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+        }
+
+        .mini-card h4 {
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .tag {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #EEF2FF;
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .scenario-box {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 22px;
+            margin-top: 18px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+        }
+
+        .scenario-line {
+            padding: 10px 0;
+            border-bottom: 1px dashed #E2E8F0;
+            line-height: 1.65;
+        }
+
+        .scenario-line:last-child {
+            border-bottom: none;
+        }
+
+        .scenario-speaker {
+            font-weight: 800;
+            color: var(--accent);
+            display: inline-block;
+            min-width: 95px;
+        }
+
+        .script-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .soft-btn {
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .soft-btn.primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .soft-btn.warning {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+
+        .soft-btn.success {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .help-item {
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: white;
+        }
+
+        .help-item h4 {
+            margin-bottom: 8px;
+        }
+
+        .quiz-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .quiz-card {
+            padding: 18px;
+            border-radius: 20px;
+            background: white;
+            border: 1px solid var(--border);
+        }
+
+        .quiz-card button {
+            margin-top: 12px;
+        }
+
         @media (max-width: 1024px) {
             .dashboard-grid { grid-template-columns: 1fr; }
             .sidebar { position: fixed; height: 100%; left: -280px; box-shadow: 20px 0 50px rgba(0,0,0,0.1); }
             .sidebar.mobile-open { left: 0; }
             .mobile-menu-trigger { display: block !important; }
+            .video-grid { grid-template-columns: 1fr; }
         }
 
-        .lang-btn { padding: 10px 20px; border-radius: 12px; border: 1px solid #E2E8F0; background: white; cursor: pointer; font-weight: 700; transition: 0.3s; }
-        .lang-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(50px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes pulse { 
+            0% { transform: scale(1); } 
+            50% { transform: scale(1.05); } 
+            100% { transform: scale(1); } 
+        }
     </style>
 </head>
 <body id="main-body">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar" id="app-sidebar">
         <button class="toggle-sidebar" onclick="toggleSidebar()">⟨</button>
         <div class="logo">🚑 <span>AI Ambulance</span></div>
@@ -203,12 +474,15 @@
             <div class="nav-link" onclick="openFullPage('doctors')">👨‍⚕️ <span>Medical Team</span></div>
             <div class="nav-link" onclick="openFullPage('history')">📅 <span>Patient History</span></div>
             <div class="nav-link" onclick="openFullPage('settings')">⚙️ <span>System Settings</span></div>
+            <div class="nav-link" onclick="openFullPage('script')">🎬 <span>Demo Script</span></div>
+            <div class="nav-link" onclick="openFullPage('library')">📚 <span>First Aid Library</span></div>
+            <div class="nav-link" onclick="openFullPage('videos')">🎥 <span>Video Gallery</span></div>
+            <div class="nav-link" onclick="openFullPage('quiz')">❓ <span>Offline Q&A</span></div>
         </nav>
 
         <button class="sos-btn" onclick="triggerEmergency()">🆘 <span>SOS EMERGENCY</span></button>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="main">
         <header class="header">
             <div class="user-info">
@@ -218,13 +492,12 @@
                     <button class="lang-btn" id="ru-btn" onclick="updateLanguage('ru')">RU</button>
                 </div>
                 <h1 id="header-title">Xush kelibsiz, Ahsanul!</h1>
-                <p id="header-desc" style="color: #64748B;">Sog'liqni monitoring qilish tizimi faol</p>
+                <p id="header-desc" style="color: var(--muted);">Sog'liqni monitoring qilish tizimi faol</p>
             </div>
             <button class="lang-btn mobile-menu-trigger" style="display: none;" onclick="toggleMobileMenu()">☰ Menu</button>
         </header>
 
         <div class="dashboard-grid">
-            <!-- LEFT COLUMN -->
             <div class="left-col">
                 <div class="card analysis-card">
                     <h2 id="anal-h">📊 Smart Health Analysis</h2>
@@ -244,16 +517,15 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN -->
             <div class="right-col">
                 <div class="card" style="text-align: center;">
-                    <p style="color: #64748B; font-weight: 600;">Yurak urishi (Pulse)</p>
+                    <p style="color: var(--muted); font-weight: 600;">Yurak urishi (Pulse)</p>
                     <div style="font-size: 45px; font-weight: 800; color: var(--sos); margin: 15px 0;">76 <small style="font-size: 18px; color: #94A3B8;">BPM</small></div>
                     <div style="background: #DCFCE7; color: #166534; padding: 8px; border-radius: 12px; display: inline-block; font-weight: 700; font-size: 13px;">✓ NORMAL</div>
                 </div>
 
                 <div class="card" style="margin-top: 30px; border-left: 6px solid #3B82F6;">
-                    <p style="color: #64748B; font-weight: 600;">Qon bosimi</p>
+                    <p style="color: var(--muted); font-weight: 600;">Qon bosimi</p>
                     <div style="font-size: 35px; font-weight: 800; color: #3B82F6; margin: 10px 0;">120/80</div>
                     <p style="font-size: 13px; color: #94A3B8;">Oxirgi o'lchov: 2 soat oldin</p>
                 </div>
@@ -266,19 +538,16 @@
         </div>
     </main>
 
-    <!-- FULL SCREEN PAGES -->
     <div id="fullPageOverlay" class="overlay-page">
         <span class="close-page" onclick="closeFullPage()">×</span>
         <div id="pageDynamicContent"></div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
         let appLang = 'uz';
         let voiceModeActive = false;
         const voiceSynth = window.speechSynthesis;
 
-        // 1. TILLARNI BOSHQARISH
         function updateLanguage(lang) {
             appLang = lang;
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
@@ -296,7 +565,6 @@
             document.getElementById('call-h').innerText = dictionary[lang].call;
         }
 
-        // 2. SIDEBAR TOGGLE (NOTEBOOK UCHUN)
         function toggleSidebar() {
             const sidebar = document.getElementById('app-sidebar');
             const btn = document.querySelector('.toggle-sidebar');
@@ -308,7 +576,6 @@
             document.getElementById('app-sidebar').classList.toggle('mobile-open');
         }
 
-        // 3. YANGI SAHIFALAR (DOCTORS, HISTORY, SETTINGS)
         function openFullPage(type) {
             const overlay = document.getElementById('fullPageOverlay');
             const content = document.getElementById('pageDynamicContent');
@@ -317,47 +584,220 @@
             if(type === 'doctors') {
                 content.innerHTML = `
                     <h1 style="font-size: 45px; color: var(--accent); font-weight: 800;">👨‍⚕️ Qualified Medical Team</h1>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
-                        <div class="card"><h3>Dr. Ahsanul AI</h3><p>Chief Medical Intelligence Scientist</p></div>
-                        <div class="card"><h3>Dr. Elena Petrova</h3><p>Senior Cardiologist & Surgeon</p></div>
-                        <div class="card"><h3>Dr. James Wilson</h3><p>Emergency Response Specialist</p></div>
-                    </div>
-                    <div class="video-grid">
-                        <iframe src="https://youtube.com"></iframe>
-                        <iframe src="https://youtube.com"></iframe>
+                    <p style="margin-top: 12px; color: var(--muted); max-width: 800px;">This section shows the people and roles behind the emergency support system.</p>
+                    <div class="mini-grid">
+                        <div class="mini-card">
+                            <h4>Dr. Ahsanul AI</h4>
+                            <p>Chief Medical Intelligence Scientist</p>
+                            <span class="tag">AI Coordinator</span>
+                        </div>
+                        <div class="mini-card">
+                            <h4>Dr. Elena Petrova</h4>
+                            <p>Senior Cardiologist & Surgeon</p>
+                            <span class="tag">Heart Care</span>
+                        </div>
+                        <div class="mini-card">
+                            <h4>Dr. James Wilson</h4>
+                            <p>Emergency Response Specialist</p>
+                            <span class="tag">Emergency</span>
+                        </div>
+                        <div class="mini-card">
+                            <h4>Dr. Maria Chen</h4>
+                            <p>First Aid Protocol Analyst</p>
+                            <span class="tag">Protocol</span>
+                        </div>
                     </div>
                 `;
             } else if(type === 'settings') {
                 content.innerHTML = `
                     <h1 style="font-size: 45px; font-weight: 800;">⚙️ System Customization</h1>
-                    <div class="card" style="margin-top: 40px; max-width: 600px;">
+                    <p style="margin-top: 12px; color: var(--muted);">Quick controls for the dashboard look and feel.</p>
+                    <div class="card" style="margin-top: 40px; max-width: 800px;">
                         <h3>Change Dashboard Background</h3>
-                        <div style="display: flex; gap: 15px; margin-top: 25px;">
+                        <div style="display: flex; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
                             <button class="lang-btn" onclick="changeTheme('#ffffff', '#1e293b')">Pure White</button>
                             <button class="lang-btn" onclick="changeTheme('#1a1a1a', '#ffffff')">Deep Dark</button>
                             <button class="lang-btn" onclick="changeTheme('#f0f4f8', '#1e293b')">Classic Blue</button>
+                            <button class="lang-btn" onclick="changeTheme('#f8fafc', '#0f172a')">Soft Slate</button>
                         </div>
+                    </div>
+                    <div class="card" style="margin-top: 25px; max-width: 800px;">
+                        <h3>Voice Mode</h3>
+                        <p style="margin-top: 10px; color: var(--muted);">Turn on voice replies from the chat button on the main screen.</p>
                     </div>
                 `;
             } else if(type === 'history') {
                 content.innerHTML = `
                     <h1 style="font-size: 45px; font-weight: 800;">📅 Medical Timeline</h1>
+                    <p style="margin-top: 12px; color: var(--muted);">Recent checks and notes for the patient dashboard.</p>
                     <div style="margin-top: 40px;">
                         <div class="card" style="margin-bottom: 20px;"><b>2026-03-28:</b> Qon tahlili natijalari (Hammasi joyida)</div>
                         <div class="card" style="margin-bottom: 20px;"><b>2026-02-15:</b> Umumiy tibbiy ko'rikdan o'tish</div>
+                        <div class="card" style="margin-bottom: 20px;"><b>2026-01-11:</b> Pulse monitoring completed</div>
+                        <div class="card" style="margin-bottom: 20px;"><b>2025-12-07:</b> Emergency reminder system tested</div>
+                    </div>
+                `;
+            } else if(type === 'script') {
+                content.innerHTML = `
+                    <h1 style="font-size: 45px; font-weight: 800;">🎬 Demo Script</h1>
+                    <p style="margin-top: 12px; color: var(--muted); max-width: 900px;">This section contains the dialogue you can use during the presentation. It is written as a natural emergency scene.</p>
+                    
+                    <div class="scenario-box">
+                        <h3>Scene: Girl falls and hurts her leg</h3>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 1:</span> Aahh… Wait… I think I fell wrong. My leg really hurts. I cannot stand up.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Action:</span> Sit on the ground and try to move, then stop.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> Oh no, are you okay? Can you stand? Let me help you.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Action:</span> Try to help but stop.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 1:</span> No no, wait. It hurts too much. Do not move my leg.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> I do not know what to do. Should I lift you or call someone? What if I do something wrong?</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Action:</span> Show panic.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 1:</span> I am scared. What if it is broken?</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> Okay… wait… think. We learned that moving can be dangerous…</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Action:</span> Pause like thinking.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> Yes. I will use DocNear.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Action:</span> Take phone quickly.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Action:</span> Show phone screen. Open app. Tap Injury / Accident. Scroll a little.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> It says: Keep the injured person still. Do not move the leg. Try to keep it in one position.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> Do not move. Stay calm. I am here.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 1:</span> Okay… Please be quick.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> It also says: Call emergency services immediately.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Action:</span> Pretend pressing button.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> I am sending your location now. They will find us faster.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> In emergencies, people panic and make mistakes. But the right action can save someone from serious harm.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 1:</span> I did not know what to do. I was scared to even move.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> DocNear gives simple instructions. Step by step. So anyone can help safely.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> What should you do if someone may have a broken leg?</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 1:</span> Do not move them. Keep them still.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 2:</span> And what if there is no internet?</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Girl 1:</span> DocNear can send an SMS. So help can still come.</div>
+                        <div class="scenario-line"><span class="scenario-speaker">Final:</span> DocNear helps you stay calm, make the right decision, and get help faster.</div>
+
+                        <div class="script-actions">
+                            <button class="soft-btn primary" onclick="fillQuestion('my leg is injured')">Try in Chat</button>
+                            <button class="soft-btn success" onclick="fillQuestion('my leg hurts')">Try Short Version</button>
+                            <button class="soft-btn warning" onclick="fillQuestion('i am scared')">Panic Response</button>
+                        </div>
+                    </div>
+                `;
+            } else if(type === 'library') {
+                content.innerHTML = `
+                    <h1 style="font-size: 45px; font-weight: 800;">📚 First Aid Library</h1>
+                    <p style="margin-top: 12px; color: var(--muted); max-width: 900px;">Simple offline guidance for emergency situations. These are short demo notes for the project.</p>
+
+                    <div class="help-grid">
+                        <div class="help-item">
+                            <h4>Leg injury</h4>
+                            <p>Keep the leg still, avoid movement, and call for help.</p>
+                            <span class="tag">Injury</span>
+                        </div>
+                        <div class="help-item">
+                            <h4>Bleeding</h4>
+                            <p>Apply pressure using a clean cloth and stay calm.</p>
+                            <span class="tag">Bleeding</span>
+                        </div>
+                        <div class="help-item">
+                            <h4>Burn</h4>
+                            <p>Cool the area with running water. Do not use ice directly.</p>
+                            <span class="tag">Burn</span>
+                        </div>
+                        <div class="help-item">
+                            <h4>Choking</h4>
+                            <p>Get help immediately and use basic first aid steps.</p>
+                            <span class="tag">Airway</span>
+                        </div>
+                        <div class="help-item">
+                            <h4>Dizziness</h4>
+                            <p>Sit down carefully, breathe slowly, and avoid sudden movement.</p>
+                            <span class="tag">Safety</span>
+                        </div>
+                        <div class="help-item">
+                            <h4>Head injury</h4>
+                            <p>Keep the person calm and watch for changes. Call emergency help.</p>
+                            <span class="tag">Critical</span>
+                        </div>
+                        <div class="help-item">
+                            <h4>Shock</h4>
+                            <p>Keep the person warm and contact emergency services.</p>
+                            <span class="tag">Emergency</span>
+                        </div>
+                        <div class="help-item">
+                            <h4>Fever</h4>
+                            <p>Rest, drink water, and monitor symptoms.</p>
+                            <span class="tag">Common</span>
+                        </div>
+                        <div class="help-item">
+                            <h4>Fracture</h4>
+                            <p>Do not move the injured part and wait for professional help.</p>
+                            <span class="tag">Bone</span>
+                        </div>
+                        <div class="help-item">
+                            <h4>Emergency</h4>
+                            <p>Share the location, keep calm, and call the ambulance number.</p>
+                            <span class="tag">SOS</span>
+                        </div>
+                    </div>
+                `;
+            } else if(type === 'videos') {
+                content.innerHTML = `
+                    <h1 style="font-size: 45px; font-weight: 800;">🎥 Video Gallery</h1>
+                    <p style="margin-top: 12px; color: var(--muted); max-width: 900px;">Replace the sample video IDs with your chosen YouTube videos for the final presentation.</p>
+                    <div class="video-grid">
+                        <iframe src="https://www.youtube.com/embed/9bZkp7q19f0"></iframe>
+                        <iframe src="https://www.youtube.com/embed/3JZ_D3ELwOQ"></iframe>
+                        <iframe src="https://www.youtube.com/embed/L_jWHffIx5E"></iframe>
+                        <iframe src="https://www.youtube.com/embed/kXYiU_JCYtU"></iframe>
+                    </div>
+                `;
+            } else if(type === 'quiz') {
+                content.innerHTML = `
+                    <h1 style="font-size: 45px; font-weight: 800;">❓ Offline Q&A</h1>
+                    <p style="margin-top: 12px; color: var(--muted); max-width: 900px;">Use these sample prompts during the demo or testing session. They are short and easy to ask from the chat box.</p>
+
+                    <div class="quiz-list">
+                        <div class="quiz-card">
+                            <strong>Prompt:</strong> my leg is injured
+                            <p style="margin-top: 8px;">Expected: keep still, do not move, call help.</p>
+                            <button class="soft-btn primary" onclick="fillQuestion('my leg is injured')">Send to Chat</button>
+                        </div>
+                        <div class="quiz-card">
+                            <strong>Prompt:</strong> my leg hurts
+                            <p style="margin-top: 8px;">Expected: avoid standing, stay in position.</p>
+                            <button class="soft-btn primary" onclick="fillQuestion('my leg hurts')">Send to Chat</button>
+                        </div>
+                        <div class="quiz-card">
+                            <strong>Prompt:</strong> i fell
+                            <p style="margin-top: 8px;">Expected: do not rush, stay calm, call for help.</p>
+                            <button class="soft-btn primary" onclick="fillQuestion('i fell')">Send to Chat</button>
+                        </div>
+                        <div class="quiz-card">
+                            <strong>Prompt:</strong> i am scared
+                            <p style="margin-top: 8px;">Expected: breathe slowly and stay calm.</p>
+                            <button class="soft-btn primary" onclick="fillQuestion('i am scared')">Send to Chat</button>
+                        </div>
+                        <div class="quiz-card">
+                            <strong>Prompt:</strong> help me
+                            <p style="margin-top: 8px;">Expected: emergency message and calm response.</p>
+                            <button class="soft-btn primary" onclick="fillQuestion('help me')">Send to Chat</button>
+                        </div>
+                        <div class="quiz-card">
+                            <strong>Prompt:</strong> i am bleeding
+                            <p style="margin-top: 8px;">Expected: pressure, cloth, and emergency call.</p>
+                            <button class="soft-btn primary" onclick="fillQuestion('i am bleeding')">Send to Chat</button>
+                        </div>
                     </div>
                 `;
             }
         }
 
-        function closeFullPage() { document.getElementById('fullPageOverlay').style.display = 'none'; }
+        function closeFullPage() { 
+            document.getElementById('fullPageOverlay').style.display = 'none'; 
+        }
 
         function changeTheme(bg, text) {
             document.getElementById('main-body').style.background = bg;
             document.getElementById('main-body').style.color = text;
         }
 
-        // 4. AI CHAT VA OVOZ (CHATGPT STYLE)
         async function processChat() {
             const input = document.getElementById('user-input');
             const chatBox = document.getElementById('chat-box');
@@ -379,7 +819,9 @@
                 chatBox.scrollTop = chatBox.scrollHeight;
                 
                 if(voiceModeActive) speakText(data.reply);
-            } catch(e) { chatBox.innerHTML += `<div class="msg bot">Server bilan bog'lanishda xatolik!</div>`; }
+            } catch(e) {
+                chatBox.innerHTML += `<div class="msg bot">Server bilan bog'lanishda xatolik!</div>`;
+            }
         }
 
         function toggleVoiceAI() {
@@ -416,6 +858,12 @@
         function simulateAnalysis() {
             alert("Sun'iy intellekt tahlili boshlandi. Kuting...");
             setTimeout(() => alert("Tahlil natijasi: Sizning sog'lig'ingiz 94% ijobiy!"), 2000);
+        }
+
+        function fillQuestion(text) {
+            document.getElementById('user-input').value = text;
+            closeFullPage();
+            setTimeout(() => processChat(), 150);
         }
     </script>
 </body>
