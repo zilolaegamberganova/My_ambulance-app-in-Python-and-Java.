@@ -866,5 +866,166 @@
             setTimeout(() => processChat(), 150);
         }
     </script>
+    <script>
+// Qo‘shimcha AI va dashboard funksiyalari
+let emergencyActive = false;
+let voiceModeActive = false;
+const voiceSynth = window.speechSynthesis;
+
+// 1. Random pulse generator (har 3 sekundda yangilanadi)
+function simulatePulse() {
+    const pulse = Math.floor(Math.random() * (120 - 60 + 1)) + 60;
+    const el = document.querySelector('.right-col div:nth-child(1) div');
+    if(el) el.innerHTML = `${pulse} <small style="font-size: 18px; color: #94A3B8;">BPM</small>`;
+    setTimeout(simulatePulse, 3000);
+}
+simulatePulse();
+
+// 2. Random blood pressure generator
+function simulateBP() {
+    const sys = Math.floor(Math.random() * (130 - 110 + 1)) + 110;
+    const dia = Math.floor(Math.random() * (90 - 70 + 1)) + 70;
+    const el = document.querySelector('.right-col div:nth-child(2) div');
+    if(el) el.innerText = `${sys}/${dia}`;
+    setTimeout(simulateBP, 5000);
+}
+simulateBP();
+
+// 3. Simple AI chat simulation
+const botReplies = [
+    "Savolingizni tushundim!",
+    "Iltimos, aniqroq yozing.",
+    "Sizning sog'liq ko‘rsatkichlaringiz normal.",
+    "Shifokor bilan bog‘laning.",
+    "SOS funksiyasi faol.",
+    "Tahlil yakunlandi!",
+    "Monitoring davom etmoqda."
+];
+
+function processChat() {
+    const input = document.getElementById('user-input');
+    if(!input || input.value.trim() === "") return;
+    
+    const userMsg = document.createElement('div');
+    userMsg.className = 'msg user';
+    userMsg.innerText = input.value;
+    document.getElementById('chat-box').appendChild(userMsg);
+    
+    setTimeout(() => {
+        const botMsg = document.createElement('div');
+        botMsg.className = 'msg bot';
+        botMsg.innerText = botReplies[Math.floor(Math.random() * botReplies.length)];
+        document.getElementById('chat-box').appendChild(botMsg);
+        document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+    }, 500);
+    
+    input.value = '';
+}
+
+// 4. SOS Emergency simulation
+function triggerEmergency() {
+    emergencyActive = true;
+    alert("🚨 SOS Emergency Activated! 🚑");
+    const btn = document.querySelector('.sos-btn');
+    if(btn) btn.style.background = "#BF0000";
+    setTimeout(() => {
+        emergencyActive = false;
+        if(btn) btn.style.background = "var(--sos)";
+    }, 5000);
+}
+
+// 5. Voice AI simulation toggle
+function toggleVoiceAI() {
+    voiceModeActive = !voiceModeActive;
+    const toggle = document.getElementById('voice-toggle');
+    if(toggle) toggle.classList.toggle('active', voiceModeActive);
+    speakText(`Voice AI mode is now ${voiceModeActive ? 'active' : 'inactive'}.`);
+}
+
+function speakText(text) {
+    if(!voiceModeActive) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    voiceSynth.speak(utter);
+}
+
+// 6. Simulate analysis button
+function simulateAnalysis() {
+    const btn = document.querySelector('.analysis-btn');
+    if(!btn) return;
+    btn.innerText = "Tahlil qilinyapti...";
+    btn.disabled = true;
+    setTimeout(() => {
+        btn.innerText = "Tahlilni boshlash";
+        btn.disabled = false;
+        alert("✅ Tahlil yakunlandi! Ko‘rsatkichlar normal.");
+    }, 3000);
+}
+
+// 7. Change theme dynamically
+function changeTheme(bg, text) {
+    document.body.style.background = bg;
+    document.body.style.color = text;
+}
+
+// 8. Mini dashboard simulation
+for(let i=0; i<100; i++){
+    const card = document.createElement('div');
+    card.className = 'mini-card';
+    card.innerHTML = `<h4>Stat ${i+1}</h4>
+                      <p>Random value: ${Math.floor(Math.random()*100)}</p>
+                      <span class="tag">Info</span>`;
+    if(document.querySelector('.left-col')) document.querySelector('.left-col').appendChild(card);
+}
+
+// 9. Automatic chat filler (demo 50 messages)
+for(let j=0; j<50; j++){
+    setTimeout(()=>{
+        const botMsg = document.createElement('div');
+        botMsg.className = 'msg bot';
+        botMsg.innerText = botReplies[Math.floor(Math.random() * botReplies.length)];
+        const chatBox = document.getElementById('chat-box');
+        if(chatBox) {
+            chatBox.appendChild(botMsg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    }, j*200);
+}
+
+// 10. Random scenario logs
+const scenarios = ["Patient stable.", "Heart rate elevated.", "Administered medication.", "Monitoring vitals.", "Temperature normal."];
+for(let k=0;k<50;k++){
+    const div = document.createElement('div');
+    div.className = 'scenario-line';
+    div.innerHTML = `<span class="scenario-speaker">System:</span> ${scenarios[Math.floor(Math.random()*scenarios.length)]}`;
+    if(document.querySelector('.left-col')) document.querySelector('.left-col').appendChild(div);
+}
+
+// 11. Extra interactive simulation for 50–100 qator
+function randomAlerts() {
+    const msgs = ["Reminder: Take medicine", "Alert: High blood pressure", "Note: Check oxygen level", "Info: Daily report generated"];
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert-msg';
+    alertDiv.innerText = msgs[Math.floor(Math.random()*msgs.length)];
+    if(document.querySelector('.alerts-col')) document.querySelector('.alerts-col').appendChild(alertDiv);
+    setTimeout(randomAlerts, 4000);
+}
+randomAlerts();
+
+// 12. Small animation for cards
+function animateCards() {
+    const cards = document.querySelectorAll('.mini-card');
+    cards.forEach((c, idx) => {
+        c.style.transform = `rotate(${Math.sin(Date.now()/1000 + idx)*2}deg)`;
+    });
+    requestAnimationFrame(animateCards);
+}
+animateCards();
+
+// 13. Light/Color theme toggle every 10 seconds
+setInterval(()=> {
+    const dark = Math.random() > 0.5;
+    changeTheme(dark ? "#1E293B" : "#F8FAFC", dark ? "#F8FAFC" : "#1E293B");
+}, 10000);
+</script>
 </body>
 </html>
