@@ -1026,6 +1026,40 @@ setInterval(()=> {
     const dark = Math.random() > 0.5;
     changeTheme(dark ? "#1E293B" : "#F8FAFC", dark ? "#F8FAFC" : "#1E293B");
 }, 10000);
+        const offlineQA = [
+  { question: "What's your mood?", answers: ["Good", "Bad", "Neutral", "Stressed"], advice: {
+    "Good": "Keep up the good work! Maintain your routine.",
+    "Bad": "Try to relax, maybe some breathing exercises.",
+    "Neutral": "Stay mindful and focus on small wins.",
+    "Stressed": "Take a break, drink water, and practice calmness."
+  }},
+  { question: "Do you have pain?", answers: ["Yes", "No"], advice: { "Yes": "Consult a doctor if pain persists.", "No": "Great! Keep monitoring." } }
+  // Shu tarzda 10–25 savol qo‘shish mumkin
+];
+
+function processOfflineQA(userInput) {
+    let found = offlineQA.find(q => userInput.toLowerCase().includes(q.question.toLowerCase()));
+    if(found) {
+        let buttonsHTML = found.answers.map(a => `<button onclick="showAdvice('${found.question}','${a}')">${a}</button>`).join(" ");
+        document.getElementById('chat-box').innerHTML += `<div class="msg bot">Please select an option: ${buttonsHTML}</div>`;
+    } else {
+        document.getElementById('chat-box').innerHTML += `<div class="msg bot">Sorry, I don't have an answer for that offline.</div>`;
+    }
+}
+
+function showAdvice(question, answer) {
+    let qa = offlineQA.find(q => q.question === question);
+    let advice = qa.advice[answer];
+    document.getElementById('chat-box').innerHTML += `<div class="msg bot">Advice: ${advice}</div>`;
+    if(voiceModeActive) speakText(advice);
+}
+
+function speakText(text) {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = appLang === "en" ? "en-US" : (appLang === "ru" ? "ru-RU" : "uz-UZ");
+    voiceSynth.speak(utter);
+}
 </script>
+    
 </body>
 </html>
