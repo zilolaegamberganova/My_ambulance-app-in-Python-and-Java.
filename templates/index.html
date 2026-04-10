@@ -1059,6 +1059,70 @@ function speakText(text) {
     utter.lang = appLang === "en" ? "en-US" : (appLang === "ru" ? "ru-RU" : "uz-UZ");
     voiceSynth.speak(utter);
 }
+        const translations = {
+    en: {
+        logo: "Ambulance AI",
+        nav_dashboard: "Dashboard",
+        nav_patients: "Patients",
+        nav_history: "History",
+        nav_settings: "Settings",
+        sos_btn: "EMERGENCY SOS",
+        ai_title: "AI Health Analysis",
+        ai_desc: "Get real-time insights from medical data.",
+        ai_btn: "Start Analysis",
+        chat_placeholder: "Ask anything about health...",
+    },
+    uz: {
+        logo: "Tez Yordam AI",
+        nav_dashboard: "Asosiy Oyna",
+        nav_patients: "Bemorlar",
+        nav_history: "Tarix",
+        nav_settings: "Sozlamalar",
+        sos_btn: "TEZKOR SOS",
+        ai_title: "Sun'iy Intellekt Tahlili",
+        ai_desc: "Tibbiy ma'lumotlardan real vaqtda xulosa oling.",
+        ai_btn: "Tahlilni Boshlash",
+        chat_placeholder: "Sog'liq haqida savol bering...",
+    },
+    ru: {
+        logo: "Скорая Помощь ИИ",
+        nav_dashboard: "Панель",
+        nav_patients: "Пациенты",
+        nav_history: "История",
+        nav_settings: "Настройки",
+        sos_btn: "ЭКСТРЕННЫЙ SOS",
+        ai_title: "ИИ Анализ Здоровья",
+        ai_desc: "Получайте данные о здоровье в реальном времени.",
+        ai_btn: "Начать Анализ",
+        chat_placeholder: "Спросите о здоровье...",
+    }
+};
+
+let appLang = "en"; // Boshlang'ich til
+
+function changeLanguage(lang) {
+    appLang = lang; // Ovozli yordamchi tilini ham o'zgartiradi
+    const t = translations[lang];
+    
+    document.querySelector('.logo').innerText = t.logo;
+    
+    const navSpans = document.querySelectorAll('.nav-link span');
+    if (navSpans.length >= 4) {
+        navSpans[0].innerText = t.nav_dashboard;
+        navSpans[1].innerText = t.nav_patients;
+        navSpans[2].innerText = t.nav_history;
+        navSpans[3].innerText = t.nav_settings;
+    }
+    
+    document.querySelector('.sos-btn span').innerText = t.sos_btn;
+    document.querySelector('.analysis-card h2').innerText = t.ai_title;
+    document.querySelector('.analysis-card p').innerText = t.ai_desc;
+    document.querySelector('.analysis-btn').innerText = t.ai_btn;
+    document.querySelector('input').placeholder = t.chat_placeholder;
+    
+    document.documentElement.lang = lang;
+}
+
 </script>
     
 </body>
