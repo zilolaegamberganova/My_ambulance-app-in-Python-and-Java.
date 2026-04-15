@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 # --- Simulyatsiya qilingan bemor ma'lumotlari ---
 PATIENT_INFO = {
-    "name": "Ahsanul",
+    "name": "Zilola",
     "age": 25,
     "blood_type": "O+",
     "heart_rate": 76,
